@@ -1,0 +1,22 @@
+[project]
+name = "lab"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "celluloid>=0.2.0",
+    "ffmpeg>=1.4",
+    "imageio>=2.37.0",
+    "imageio-ffmpeg>=0.6.0",
+    "ipykernel>=6.30.1",
+    "jupyterlab>=4.4.6",
+    "lerobot>=0.3.2",
+    "matplotlib>=3.10.5",
+    "notebook>=7.4.5",
+    "numpy>=2.3.2",
+    "pip>=25.2",
+    "seaborn>=0.13.2",
+    "torch>=2.8.0",
+    "tqdm>=4.67.1",
+]

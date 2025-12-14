@@ -1,0 +1,826 @@
+========================================================================
+开始时间: Sun Oct  5 07:31:34 PM CEST 2025
+数据文件: ../Compress_Test/test_complete.npz
+输出目录: ./results_full_optimization_20251005_193134
+Workers: 8
+========================================================================
+
+
+========================================================================
+[1/3] 策略1: 固定 q 高保真 + 优化 dq/tau
+========================================================================
+配置: Mq=128(固定), Mdq∈{8,16,24,32,48,64}, Mtau∈{8,16,24,32,48,64}
+预计: ~144配置, ~15分钟
+
+======================================================================
+系统信息
+======================================================================
+CPU 核心数: 32
+CPU 使用率: 1.1%
+内存总量: 62.5 GB
+可用内存: 53.9 GB
+内存使用率: 13.7%
+======================================================================
+
+[并行] 使用 8 个 workers (请求: 8)
+
+[数据] 加载 ../Compress_Test/test_complete.npz...
+[数据] 形状: N=2040, T=7853, J=7
+
+[扫描] 总配置数: 288
+[扫描] 批处理大小: 20
+======================================================================
+
+[批次 1/15] 处理配置 1-20/288
+  完成: 20/20 配置
+  累计: 20/288 配置
+
+[批次 2/15] 处理配置 21-40/288
+  完成: 20/20 配置
+  累计: 40/288 配置
+
+[批次 3/15] 处理配置 41-60/288
+  完成: 20/20 配置
+  累计: 60/288 配置
+
+[批次 4/15] 处理配置 61-80/288
+  完成: 20/20 配置
+  累计: 80/288 配置
+
+[批次 5/15] 处理配置 81-100/288
+  完成: 20/20 配置
+  累计: 100/288 配置
+
+[批次 6/15] 处理配置 101-120/288
+  完成: 20/20 配置
+  累计: 120/288 配置
+
+[批次 7/15] 处理配置 121-140/288
+  完成: 20/20 配置
+  累计: 140/288 配置
+
+[批次 8/15] 处理配置 141-160/288
+  完成: 20/20 配置
+  累计: 160/288 配置
+
+[批次 9/15] 处理配置 161-180/288
+  完成: 20/20 配置
+  累计: 180/288 配置
+
+[批次 10/15] 处理配置 181-200/288
+  完成: 20/20 配置
+  累计: 200/288 配置
+
+[批次 11/15] 处理配置 201-220/288
+  完成: 20/20 配置
+  累计: 220/288 配置
+
+[批次 12/15] 处理配置 221-240/288
+  完成: 20/20 配置
+  累计: 240/288 配置
+
+[批次 13/15] 处理配置 241-260/288
+  完成: 20/20 配置
+  累计: 260/288 配置
+
+[批次 14/15] 处理配置 261-280/288
+  完成: 20/20 配置
+  累计: 280/288 配置
+
+[批次 15/15] 处理配置 281-288/288
+  完成: 8/8 配置
+  累计: 288/288 配置
+
+======================================================================
+扫描完成
+======================================================================
+总配置数: 288
+成功: 288
+失败: 0
+耗时: 00:16:51
+
+WRMSE 统计:
+  最小: 0.150360
+  最大: 0.336540
+  平均: 0.245894
+  中位数: 0.246438
+
+潜变量维度统计:
+  最小: 1008
+  最大: 1792
+  平均: 1344.0
+
+最佳配置 (Top 10):
+1. M=(128,64,64) deg=(5,3,5) | WRMSE=0.150360 | Latent=1792 | 压缩比=92.03x 
+2. M=(128,64,64) deg=(5,3,5) | WRMSE=0.150360 | Latent=1792 | 压缩比=92.03x 
+3. M=(128,64,64) deg=(3,3,5) | WRMSE=0.150361 | Latent=1792 | 压缩比=92.03x 
+4. M=(128,64,64) deg=(3,3,5) | WRMSE=0.150361 | Latent=1792 | 压缩比=92.03x 
+5. M=(128,48,64) deg=(5,3,5) | WRMSE=0.152761 | Latent=1680 | 压缩比=98.16x 
+6. M=(128,48,64) deg=(5,3,5) | WRMSE=0.152761 | Latent=1680 | 压缩比=98.16x 
+7. M=(128,48,64) deg=(3,3,5) | WRMSE=0.152762 | Latent=1680 | 压缩比=98.16x 
+8. M=(128,48,64) deg=(3,3,5) | WRMSE=0.152762 | Latent=1680 | 压缩比=98.16x 
+9. M=(128,32,64) deg=(5,3,5) | WRMSE=0.154613 | Latent=1568 | 压缩比=105.17x 
+10. M=(128,32,64) deg=(5,3,5) | WRMSE=0.154613 | Latent=1568 | 压缩比=105.17x 
+
+结果保存到: ./results_full_optimization_20251005_193134/strategy1
+
+[策略1] 完成! 耗时: 17分1秒
+
+========================================================================
+[2/3] 策略2: 三种预算方案 (~1000维)
+========================================================================
+方案A: Mq=128(896) + Mdq=8(56) + Mtau=6(42) = 994维
+方案B: Mq=120(840) + Mdq=16(112) + Mtau=8(56) = 1008维
+方案C: Mq=110(770) + Mdq=24(168) + Mtau=10(70) = 1008维
+预计: ~30配置, ~5分钟
+
+======================================================================
+系统信息
+======================================================================
+CPU 核心数: 32
+CPU 使用率: 1.1%
+内存总量: 62.5 GB
+可用内存: 53.4 GB
+内存使用率: 14.6%
+======================================================================
+
+[并行] 使用 8 个 workers (请求: 8)
+
+[数据] 加载 ../Compress_Test/test_complete.npz...
+[数据] 形状: N=2040, T=7853, J=7
+
+[扫描] 总配置数: 384
+[扫描] 批处理大小: 15
+======================================================================
+
+[批次 1/26] 处理配置 1-15/384
+  完成: 15/15 配置
+  累计: 15/384 配置
+
+[批次 2/26] 处理配置 16-30/384
+  完成: 15/15 配置
+  累计: 30/384 配置
+
+[批次 3/26] 处理配置 31-45/384
+  完成: 15/15 配置
+  累计: 45/384 配置
+
+[批次 4/26] 处理配置 46-60/384
+  完成: 15/15 配置
+  累计: 60/384 配置
+
+[批次 5/26] 处理配置 61-75/384
+  完成: 15/15 配置
+  累计: 75/384 配置
+
+[批次 6/26] 处理配置 76-90/384
+  完成: 15/15 配置
+  累计: 90/384 配置
+
+[批次 7/26] 处理配置 91-105/384
+  完成: 15/15 配置
+  累计: 105/384 配置
+
+[批次 8/26] 处理配置 106-120/384
+  完成: 15/15 配置
+  累计: 120/384 配置
+
+[批次 9/26] 处理配置 121-135/384
+  完成: 15/15 配置
+  累计: 135/384 配置
+
+[批次 10/26] 处理配置 136-150/384
+  完成: 15/15 配置
+  累计: 150/384 配置
+
+[批次 11/26] 处理配置 151-165/384
+  完成: 15/15 配置
+  累计: 165/384 配置
+
+[批次 12/26] 处理配置 166-180/384
+  完成: 15/15 配置
+  累计: 180/384 配置
+
+[批次 13/26] 处理配置 181-195/384
+  完成: 15/15 配置
+  累计: 195/384 配置
+
+[批次 14/26] 处理配置 196-210/384
+  完成: 15/15 配置
+  累计: 210/384 配置
+
+[批次 15/26] 处理配置 211-225/384
+  完成: 15/15 配置
+  累计: 225/384 配置
+
+[批次 16/26] 处理配置 226-240/384
+  完成: 15/15 配置
+  累计: 240/384 配置
+
+[批次 17/26] 处理配置 241-255/384
+  完成: 15/15 配置
+  累计: 255/384 配置
+
+[批次 18/26] 处理配置 256-270/384
+  完成: 15/15 配置
+  累计: 270/384 配置
+
+[批次 19/26] 处理配置 271-285/384
+  完成: 15/15 配置
+  累计: 285/384 配置
+
+[批次 20/26] 处理配置 286-300/384
+  完成: 15/15 配置
+  累计: 300/384 配置
+
+[批次 21/26] 处理配置 301-315/384
+  完成: 15/15 配置
+  累计: 315/384 配置
+
+[批次 22/26] 处理配置 316-330/384
+  完成: 15/15 配置
+  累计: 330/384 配置
+
+[批次 23/26] 处理配置 331-345/384
+  完成: 15/15 配置
+  累计: 345/384 配置
+
+[批次 24/26] 处理配置 346-360/384
+  完成: 15/15 配置
+  累计: 360/384 配置
+
+[批次 25/26] 处理配置 361-375/384
+  完成: 15/15 配置
+  累计: 375/384 配置
+
+[批次 26/26] 处理配置 376-384/384
+  完成: 9/9 配置
+  累计: 384/384 配置
+
+======================================================================
+扫描完成
+======================================================================
+总配置数: 384
+成功: 384
+失败: 0
+耗时: 00:21:54
+
+WRMSE 统计:
+  最小: 0.265546
+  最大: 0.394307
+  平均: 0.324324
+  中位数: 0.317585
+
+潜变量维度统计:
+  最小: 854
+  最大: 1176
+  平均: 999.8
+
+≤1000维 最佳配置:
+  M: q=110, dq=16, tau=16
+  degree: q=5, dq=3, tau=5
+  lambda: q=1e-06, dq=1e-06, tau=1e-06
+  潜变量: 994
+  WRMSE: 0.269323
+  RMSE: q=0.000599, dq=0.135839, tau=0.824145
+
+最佳配置 (Top 10):
+1. M=(128,24,16) deg=(5,3,5) | WRMSE=0.265546 | Latent=1176 | 压缩比=140.23x 
+2. M=(128,24,16) deg=(5,3,5) | WRMSE=0.265546 | Latent=1176 | 压缩比=140.23x 
+3. M=(120,24,16) deg=(5,3,5) | WRMSE=0.265546 | Latent=1120 | 压缩比=147.24x 
+4. M=(120,24,16) deg=(5,3,5) | WRMSE=0.265546 | Latent=1120 | 压缩比=147.24x 
+5. M=(110,24,16) deg=(5,3,5) | WRMSE=0.265546 | Latent=1050 | 压缩比=157.06x 
+6. M=(110,24,16) deg=(5,3,5) | WRMSE=0.265546 | Latent=1050 | 压缩比=157.06x 
+7. M=(128,24,16) deg=(3,3,5) | WRMSE=0.265546 | Latent=1176 | 压缩比=140.23x 
+8. M=(128,24,16) deg=(3,3,5) | WRMSE=0.265546 | Latent=1176 | 压缩比=140.23x 
+9. M=(120,24,16) deg=(3,3,5) | WRMSE=0.265546 | Latent=1120 | 压缩比=147.24x 
+10. M=(120,24,16) deg=(3,3,5) | WRMSE=0.265546 | Latent=1120 | 压缩比=147.24x 
+
+结果保存到: ./results_full_optimization_20251005_193134/strategy2
+
+[策略2] 完成! 耗时: 22分5秒
+
+========================================================================
+[3/3] 策略3: 从 q 导数评估 dq (节省维度)
+========================================================================
+配置: Mq∈{96,128,160}, Mdq=0(从q导数), Mtau∈{16,32,48,64}
+预计: ~48配置, ~8分钟
+
+======================================================================
+系统信息
+======================================================================
+CPU 核心数: 32
+CPU 使用率: 1.9%
+内存总量: 62.5 GB
+可用内存: 53.5 GB
+内存使用率: 14.4%
+======================================================================
+
+[并行] 使用 8 个 workers (请求: 8)
+
+[数据] 加载 ../Compress_Test/test_complete.npz...
+[数据] 形状: N=2040, T=7853, J=7
+
+[扫描] 总配置数: 96
+[扫描] 批处理大小: 15
+======================================================================
+
+[批次 1/7] 处理配置 1-15/96
+  完成: 15/15 配置
+  累计: 15/96 配置
+
+[批次 2/7] 处理配置 16-30/96
+  完成: 15/15 配置
+  累计: 30/96 配置
+
+[批次 3/7] 处理配置 31-45/96
+  完成: 15/15 配置
+  累计: 45/96 配置
+
+[批次 4/7] 处理配置 46-60/96
+  完成: 15/15 配置
+  累计: 60/96 配置
+
+[批次 5/7] 处理配置 61-75/96
+  完成: 15/15 配置
+  累计: 75/96 配置
+
+[批次 6/7] 处理配置 76-90/96
+  完成: 15/15 配置
+  累计: 90/96 配置
+
+[批次 7/7] 处理配置 91-96/96
+  完成: 6/6 配置
+  累计: 96/96 配置
+
+======================================================================
+扫描完成
+======================================================================
+总配置数: 96
+成功: 96
+失败: 0
+耗时: 00:24:19
+
+WRMSE 统计:
+  最小: 1.055930
+  最大: 1.108999
+  平均: 1.080486
+  中位数: 1.079067
+
+潜变量维度统计:
+  最小: 784
+  最大: 1568
+  平均: 1176.0
+
+≤1000维 最佳配置:
+  M: q=96, dq=0, tau=32
+  degree: q=3, dq=3, tau=5
+  lambda: q=1e-06, dq=1e-06, tau=1e-06
+  潜变量: 896
+  WRMSE: 1.068908
+  RMSE: q=0.001367, dq=2.091217, tau=0.701891
+
+最佳配置 (Top 10):
+1. M=(96,0,64) deg=(3,3,5) | WRMSE=1.055930 | Latent=1120 | 压缩比=147.24x ✓
+2. M=(96,0,64) deg=(3,3,5) | WRMSE=1.055930 | Latent=1120 | 压缩比=147.24x ✓
+3. M=(96,0,48) deg=(3,3,5) | WRMSE=1.060404 | Latent=1008 | 压缩比=163.60x ✓
+4. M=(96,0,48) deg=(3,3,5) | WRMSE=1.060404 | Latent=1008 | 压缩比=163.60x ✓
+5. M=(160,0,64) deg=(5,3,5) | WRMSE=1.062092 | Latent=1568 | 压缩比=105.17x ✓
+6. M=(160,0,64) deg=(5,3,5) | WRMSE=1.062092 | Latent=1568 | 压缩比=105.17x ✓
+7. M=(96,0,64) deg=(3,3,3) | WRMSE=1.062711 | Latent=1120 | 压缩比=147.24x ✓
+8. M=(96,0,64) deg=(3,3,3) | WRMSE=1.062711 | Latent=1120 | 压缩比=147.24x ✓
+9. M=(128,0,64) deg=(5,3,5) | WRMSE=1.063940 | Latent=1344 | 压缩比=122.70x ✓
+10. M=(128,0,64) deg=(5,3,5) | WRMSE=1.063940 | Latent=1344 | 压缩比=122.70x ✓
+
+结果保存到: ./results_full_optimization_20251005_193134/strategy3
+
+[策略3] 完成! 耗时: 24分29秒
+
+========================================================================
+对比分析
+========================================================================
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 28508 (\N{CJK UNIFIED IDEOGRAPH-6F5C}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 21464 (\N{CJK UNIFIED IDEOGRAPH-53D8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 32500 (\N{CJK UNIFIED IDEOGRAPH-7EF4}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 24230 (\N{CJK UNIFIED IDEOGRAPH-5EA6}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 21152 (\N{CJK UNIFIED IDEOGRAPH-52A0}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 26435 (\N{CJK UNIFIED IDEOGRAPH-6743}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 21069 (\N{CJK UNIFIED IDEOGRAPH-524D}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 27839 (\N{CJK UNIFIED IDEOGRAPH-6CBF}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 31574 (\N{CJK UNIFIED IDEOGRAPH-7B56}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 30053 (\N{CJK UNIFIED IDEOGRAPH-7565}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 22266 (\N{CJK UNIFIED IDEOGRAPH-56FA}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 23450 (\N{CJK UNIFIED IDEOGRAPH-5B9A}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 39640 (\N{CJK UNIFIED IDEOGRAPH-9AD8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 20445 (\N{CJK UNIFIED IDEOGRAPH-4FDD}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 30495 (\N{CJK UNIFIED IDEOGRAPH-771F}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 39044 (\N{CJK UNIFIED IDEOGRAPH-9884}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 31639 (\N{CJK UNIFIED IDEOGRAPH-7B97}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 26041 (\N{CJK UNIFIED IDEOGRAPH-65B9}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 26696 (\N{CJK UNIFIED IDEOGRAPH-6848}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 23548 (\N{CJK UNIFIED IDEOGRAPH-5BFC}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:57: UserWarning: Glyph 25968 (\N{CJK UNIFIED IDEOGRAPH-6570}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 21152 (\N{CJK UNIFIED IDEOGRAPH-52A0}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 26435 (\N{CJK UNIFIED IDEOGRAPH-6743}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 21069 (\N{CJK UNIFIED IDEOGRAPH-524D}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 27839 (\N{CJK UNIFIED IDEOGRAPH-6CBF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 28508 (\N{CJK UNIFIED IDEOGRAPH-6F5C}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 21464 (\N{CJK UNIFIED IDEOGRAPH-53D8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 32500 (\N{CJK UNIFIED IDEOGRAPH-7EF4}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 24230 (\N{CJK UNIFIED IDEOGRAPH-5EA6}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 31574 (\N{CJK UNIFIED IDEOGRAPH-7B56}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 30053 (\N{CJK UNIFIED IDEOGRAPH-7565}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 22266 (\N{CJK UNIFIED IDEOGRAPH-56FA}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 23450 (\N{CJK UNIFIED IDEOGRAPH-5B9A}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 39640 (\N{CJK UNIFIED IDEOGRAPH-9AD8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 20445 (\N{CJK UNIFIED IDEOGRAPH-4FDD}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 30495 (\N{CJK UNIFIED IDEOGRAPH-771F}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 39044 (\N{CJK UNIFIED IDEOGRAPH-9884}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 31639 (\N{CJK UNIFIED IDEOGRAPH-7B97}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 26041 (\N{CJK UNIFIED IDEOGRAPH-65B9}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 26696 (\N{CJK UNIFIED IDEOGRAPH-6848}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 23548 (\N{CJK UNIFIED IDEOGRAPH-5BFC}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:58: UserWarning: Glyph 25968 (\N{CJK UNIFIED IDEOGRAPH-6570}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'pareto_frontier.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:104: UserWarning: Glyph 28508 (\N{CJK UNIFIED IDEOGRAPH-6F5C}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:104: UserWarning: Glyph 21464 (\N{CJK UNIFIED IDEOGRAPH-53D8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:104: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:104: UserWarning: Glyph 32500 (\N{CJK UNIFIED IDEOGRAPH-7EF4}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:104: UserWarning: Glyph 24230 (\N{CJK UNIFIED IDEOGRAPH-5EA6}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:104: UserWarning: Glyph 20301 (\N{CJK UNIFIED IDEOGRAPH-4F4D}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:104: UserWarning: Glyph 32622 (\N{CJK UNIFIED IDEOGRAPH-7F6E}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:104: UserWarning: Glyph 31574 (\N{CJK UNIFIED IDEOGRAPH-7B56}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:104: UserWarning: Glyph 30053 (\N{CJK UNIFIED IDEOGRAPH-7565}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:104: UserWarning: Glyph 39044 (\N{CJK UNIFIED IDEOGRAPH-9884}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:104: UserWarning: Glyph 31639 (\N{CJK UNIFIED IDEOGRAPH-7B97}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:104: UserWarning: Glyph 26041 (\N{CJK UNIFIED IDEOGRAPH-65B9}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:104: UserWarning: Glyph 26696 (\N{CJK UNIFIED IDEOGRAPH-6848}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:104: UserWarning: Glyph 23548 (\N{CJK UNIFIED IDEOGRAPH-5BFC}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:104: UserWarning: Glyph 25968 (\N{CJK UNIFIED IDEOGRAPH-6570}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:104: UserWarning: Glyph 36895 (\N{CJK UNIFIED IDEOGRAPH-901F}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:104: UserWarning: Glyph 21147 (\N{CJK UNIFIED IDEOGRAPH-529B}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:104: UserWarning: Glyph 30697 (\N{CJK UNIFIED IDEOGRAPH-77E9}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:105: UserWarning: Glyph 20301 (\N{CJK UNIFIED IDEOGRAPH-4F4D}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'rmse_breakdown_comparison.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:105: UserWarning: Glyph 32622 (\N{CJK UNIFIED IDEOGRAPH-7F6E}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'rmse_breakdown_comparison.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:105: UserWarning: Glyph 28508 (\N{CJK UNIFIED IDEOGRAPH-6F5C}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'rmse_breakdown_comparison.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:105: UserWarning: Glyph 21464 (\N{CJK UNIFIED IDEOGRAPH-53D8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'rmse_breakdown_comparison.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:105: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'rmse_breakdown_comparison.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:105: UserWarning: Glyph 32500 (\N{CJK UNIFIED IDEOGRAPH-7EF4}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'rmse_breakdown_comparison.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:105: UserWarning: Glyph 24230 (\N{CJK UNIFIED IDEOGRAPH-5EA6}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'rmse_breakdown_comparison.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:105: UserWarning: Glyph 31574 (\N{CJK UNIFIED IDEOGRAPH-7B56}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'rmse_breakdown_comparison.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:105: UserWarning: Glyph 30053 (\N{CJK UNIFIED IDEOGRAPH-7565}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'rmse_breakdown_comparison.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:105: UserWarning: Glyph 39044 (\N{CJK UNIFIED IDEOGRAPH-9884}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'rmse_breakdown_comparison.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:105: UserWarning: Glyph 31639 (\N{CJK UNIFIED IDEOGRAPH-7B97}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'rmse_breakdown_comparison.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:105: UserWarning: Glyph 26041 (\N{CJK UNIFIED IDEOGRAPH-65B9}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'rmse_breakdown_comparison.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:105: UserWarning: Glyph 26696 (\N{CJK UNIFIED IDEOGRAPH-6848}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'rmse_breakdown_comparison.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:105: UserWarning: Glyph 23548 (\N{CJK UNIFIED IDEOGRAPH-5BFC}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'rmse_breakdown_comparison.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:105: UserWarning: Glyph 25968 (\N{CJK UNIFIED IDEOGRAPH-6570}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'rmse_breakdown_comparison.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:105: UserWarning: Glyph 36895 (\N{CJK UNIFIED IDEOGRAPH-901F}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'rmse_breakdown_comparison.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:105: UserWarning: Glyph 21147 (\N{CJK UNIFIED IDEOGRAPH-529B}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'rmse_breakdown_comparison.png'), dpi=150)
+/home/nvidiapc/Flow_ICLR/fmtorch/research/UniCon/Robot_Experiment/Sim/PinSim/Spline_Test/compare_strategies.py:105: UserWarning: Glyph 30697 (\N{CJK UNIFIED IDEOGRAPH-77E9}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(out_dir, 'rmse_breakdown_comparison.png'), dpi=150)
+[加载] 策略1:固定q高保真 从 ./results_full_optimization_20251005_193134/strategy1...
+  找到 288 个配置
+[加载] 策略2:1k预算方案 从 ./results_full_optimization_20251005_193134/strategy2...
+  找到 384 个配置
+[加载] 策略3:q导数dq 从 ./results_full_optimization_20251005_193134/strategy3...
+  找到 96 个配置
+
+====================================================================================================
+策略对比表
+====================================================================================================
+
+策略1:固定q高保真:
+  总配置数: 288
+  WRMSE: 最小=0.150360, 平均=0.245894
+  潜变量: 最小=1008, 最大=1792, 平均=1344.0
+  全局最佳:
+    M: q=128, dq=64, tau=64
+    潜变量: 1792
+    WRMSE: 0.150360
+
+策略2:1k预算方案:
+  总配置数: 384
+  WRMSE: 最小=0.265546, 平均=0.324324
+  潜变量: 最小=854, 最大=1176, 平均=999.8
+  ≤1000维 最佳:
+    M: q=110, dq=16, tau=16
+    degree: q=5, dq=3, tau=5
+    潜变量: 994
+    WRMSE: 0.269323
+    RMSE: q=0.000599, dq=0.135839, tau=0.824145
+  全局最佳:
+    M: q=128, dq=24, tau=16
+    潜变量: 1176
+    WRMSE: 0.265546
+
+策略3:q导数dq:
+  总配置数: 96
+  WRMSE: 最小=1.055930, 平均=1.080486
+  潜变量: 最小=784, 最大=1568, 平均=1176.0
+  ≤1000维 最佳:
+    M: q=96, dq=0, tau=32
+    degree: q=3, dq=3, tau=5
+    潜变量: 896
+    WRMSE: 1.068908
+    RMSE: q=0.001367, dq=2.091217, tau=0.701891
+  全局最佳:
+    M: q=96, dq=0, tau=64
+    潜变量: 1120
+    WRMSE: 1.055930
+
+[绘图] 生成对比图表...
+[保存] ./results_full_optimization_20251005_193134/comparison/pareto_frontier.png
+[保存] ./results_full_optimization_20251005_193134/comparison/rmse_breakdown_comparison.png
+
+[完成] 对比结果保存到 ./results_full_optimization_20251005_193134/comparison
+====================================================================================================
+/usr/lib/python3.10/tkinter/__init__.py:839: UserWarning: Glyph 20301 (\N{CJK UNIFIED IDEOGRAPH-4F4D}) missing from font(s) DejaVu Sans.
+  func(*args)
+/usr/lib/python3.10/tkinter/__init__.py:839: UserWarning: Glyph 32622 (\N{CJK UNIFIED IDEOGRAPH-7F6E}) missing from font(s) DejaVu Sans.
+  func(*args)
+/usr/lib/python3.10/tkinter/__init__.py:839: UserWarning: Glyph 28508 (\N{CJK UNIFIED IDEOGRAPH-6F5C}) missing from font(s) DejaVu Sans.
+  func(*args)
+/usr/lib/python3.10/tkinter/__init__.py:839: UserWarning: Glyph 21464 (\N{CJK UNIFIED IDEOGRAPH-53D8}) missing from font(s) DejaVu Sans.
+  func(*args)
+/usr/lib/python3.10/tkinter/__init__.py:839: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  func(*args)
+/usr/lib/python3.10/tkinter/__init__.py:839: UserWarning: Glyph 32500 (\N{CJK UNIFIED IDEOGRAPH-7EF4}) missing from font(s) DejaVu Sans.
+  func(*args)
+/usr/lib/python3.10/tkinter/__init__.py:839: UserWarning: Glyph 24230 (\N{CJK UNIFIED IDEOGRAPH-5EA6}) missing from font(s) DejaVu Sans.
+  func(*args)
+/usr/lib/python3.10/tkinter/__init__.py:839: UserWarning: Glyph 31574 (\N{CJK UNIFIED IDEOGRAPH-7B56}) missing from font(s) DejaVu Sans.
+  func(*args)
+/usr/lib/python3.10/tkinter/__init__.py:839: UserWarning: Glyph 30053 (\N{CJK UNIFIED IDEOGRAPH-7565}) missing from font(s) DejaVu Sans.
+  func(*args)
+/usr/lib/python3.10/tkinter/__init__.py:839: UserWarning: Glyph 39044 (\N{CJK UNIFIED IDEOGRAPH-9884}) missing from font(s) DejaVu Sans.
+  func(*args)
+/usr/lib/python3.10/tkinter/__init__.py:839: UserWarning: Glyph 31639 (\N{CJK UNIFIED IDEOGRAPH-7B97}) missing from font(s) DejaVu Sans.
+  func(*args)
+/usr/lib/python3.10/tkinter/__init__.py:839: UserWarning: Glyph 26041 (\N{CJK UNIFIED IDEOGRAPH-65B9}) missing from font(s) DejaVu Sans.
+  func(*args)
+/usr/lib/python3.10/tkinter/__init__.py:839: UserWarning: Glyph 26696 (\N{CJK UNIFIED IDEOGRAPH-6848}) missing from font(s) DejaVu Sans.
+  func(*args)
+/usr/lib/python3.10/tkinter/__init__.py:839: UserWarning: Glyph 23548 (\N{CJK UNIFIED IDEOGRAPH-5BFC}) missing from font(s) DejaVu Sans.
+  func(*args)
+/usr/lib/python3.10/tkinter/__init__.py:839: UserWarning: Glyph 25968 (\N{CJK UNIFIED IDEOGRAPH-6570}) missing from font(s) DejaVu Sans.
+  func(*args)
+/usr/lib/python3.10/tkinter/__init__.py:839: UserWarning: Glyph 36895 (\N{CJK UNIFIED IDEOGRAPH-901F}) missing from font(s) DejaVu Sans.
+  func(*args)
+/usr/lib/python3.10/tkinter/__init__.py:839: UserWarning: Glyph 21147 (\N{CJK UNIFIED IDEOGRAPH-529B}) missing from font(s) DejaVu Sans.
+  func(*args)
+/usr/lib/python3.10/tkinter/__init__.py:839: UserWarning: Glyph 30697 (\N{CJK UNIFIED IDEOGRAPH-77E9}) missing from font(s) DejaVu Sans.
+  func(*args)
+
+========================================================================
+生成可视化图表
+========================================================================
+[可视化] strategy1...
+[加载] 从 ./results_full_optimization_20251005_193134/strategy1 加载结果...
+[加载] 找到 288 个配置
+
+======================================================================
+结果摘要
+======================================================================
+
+总配置数: 288
+
+加权 RMSE:
+  最小: 0.150360
+  最大: 0.336540
+  平均: 0.245894
+  中位数: 0.246438
+
+潜变量维度:
+  最小: 1008
+  最大: 1792
+  平均: 1344.0
+
+压缩比:
+  最小: 92.03x
+  最大: 163.60x
+  平均: 125.12x
+
+最佳配置 (Top 10):
+排名   M(q,dq,tau)     阶数(q,dq,tau)       WRMSE        潜变量      压缩比     
+----------------------------------------------------------------------
+1    (128,64,64)     (5,3,5)            0.150360     1792     92.03   x
+2    (128,64,64)     (5,3,5)            0.150360     1792     92.03   x
+3    (128,64,64)     (3,3,5)            0.150361     1792     92.03   x
+4    (128,64,64)     (3,3,5)            0.150361     1792     92.03   x
+5    (128,48,64)     (5,3,5)            0.152761     1680     98.16   x
+6    (128,48,64)     (5,3,5)            0.152761     1680     98.16   x
+7    (128,48,64)     (3,3,5)            0.152762     1680     98.16   x
+8    (128,48,64)     (3,3,5)            0.152762     1680     98.16   x
+9    (128,32,64)     (5,3,5)            0.154613     1568     105.17  x
+10   (128,32,64)     (5,3,5)            0.154613     1568     105.17  x
+
+[绘图] 生成可视化图表...
+[保存] ./results_full_optimization_20251005_193134/strategy1/curve_latent_vs_wrmse.png
+[保存] ./results_full_optimization_20251005_193134/strategy1/curve_latent_vs_rmse_groups.png
+[保存] ./results_full_optimization_20251005_193134/strategy1/curve_compression_vs_wrmse.png
+
+[完成] 图表保存到 ./results_full_optimization_20251005_193134/strategy1
+======================================================================
+[可视化] strategy2...
+[加载] 从 ./results_full_optimization_20251005_193134/strategy2 加载结果...
+[加载] 找到 384 个配置
+
+======================================================================
+结果摘要
+======================================================================
+
+总配置数: 384
+
+加权 RMSE:
+  最小: 0.265546
+  最大: 0.394307
+  平均: 0.324324
+  中位数: 0.317585
+
+潜变量维度:
+  最小: 854
+  最大: 1176
+  平均: 999.8
+
+压缩比:
+  最小: 140.23x
+  最大: 193.11x
+  平均: 165.91x
+
+最佳配置 (Top 10):
+排名   M(q,dq,tau)     阶数(q,dq,tau)       WRMSE        潜变量      压缩比     
+----------------------------------------------------------------------
+1    (128,24,16)     (5,3,5)            0.265546     1176     140.23  x
+2    (128,24,16)     (5,3,5)            0.265546     1176     140.23  x
+3    (120,24,16)     (5,3,5)            0.265546     1120     147.24  x
+4    (120,24,16)     (5,3,5)            0.265546     1120     147.24  x
+5    (110,24,16)     (5,3,5)            0.265546     1050     157.06  x
+6    (110,24,16)     (5,3,5)            0.265546     1050     157.06  x
+7    (128,24,16)     (3,3,5)            0.265546     1176     140.23  x
+8    (128,24,16)     (3,3,5)            0.265546     1176     140.23  x
+9    (120,24,16)     (3,3,5)            0.265546     1120     147.24  x
+10   (120,24,16)     (3,3,5)            0.265546     1120     147.24  x
+
+[绘图] 生成可视化图表...
+[保存] ./results_full_optimization_20251005_193134/strategy2/curve_latent_vs_wrmse.png
+[保存] ./results_full_optimization_20251005_193134/strategy2/curve_latent_vs_rmse_groups.png
+[保存] ./results_full_optimization_20251005_193134/strategy2/curve_compression_vs_wrmse.png
+
+[完成] 图表保存到 ./results_full_optimization_20251005_193134/strategy2
+======================================================================
+[可视化] strategy3...
+[加载] 从 ./results_full_optimization_20251005_193134/strategy3 加载结果...
+[加载] 找到 96 个配置
+
+======================================================================
+结果摘要
+======================================================================
+
+总配置数: 96
+
+加权 RMSE:
+  最小: 1.055930
+  最大: 1.108999
+  平均: 1.080486
+  中位数: 1.079067
+
+潜变量维度:
+  最小: 784
+  最大: 1568
+  平均: 1176.0
+
+压缩比:
+  最小: 105.17x
+  最大: 210.35x
+  平均: 145.64x
+
+最佳配置 (Top 10):
+排名   M(q,dq,tau)     阶数(q,dq,tau)       WRMSE        潜变量      压缩比     
+----------------------------------------------------------------------
+1    (96,0,64)       (3,3,5)            1.055930     1120     147.24  x
+2    (96,0,64)       (3,3,5)            1.055930     1120     147.24  x
+3    (96,0,48)       (3,3,5)            1.060404     1008     163.60  x
+4    (96,0,48)       (3,3,5)            1.060404     1008     163.60  x
+5    (160,0,64)      (5,3,5)            1.062092     1568     105.17  x
+6    (160,0,64)      (5,3,5)            1.062092     1568     105.17  x
+7    (96,0,64)       (3,3,3)            1.062711     1120     147.24  x
+8    (96,0,64)       (3,3,3)            1.062711     1120     147.24  x
+9    (128,0,64)      (5,3,5)            1.063940     1344     122.70  x
+10   (128,0,64)      (5,3,5)            1.063940     1344     122.70  x
+
+[绘图] 生成可视化图表...
+[保存] ./results_full_optimization_20251005_193134/strategy3/curve_latent_vs_wrmse.png
+[保存] ./results_full_optimization_20251005_193134/strategy3/curve_latent_vs_rmse_groups.png
+[保存] ./results_full_optimization_20251005_193134/strategy3/curve_compression_vs_wrmse.png
+
+[完成] 图表保存到 ./results_full_optimization_20251005_193134/strategy3
+======================================================================
+
+========================================================================
+生成总结报告
+========================================================================
+
+报告已生成: ./results_full_optimization_20251005_193134/FINAL_REPORT.md
+
+========================================================================
+全部完成！
+========================================================================
+结束时间: Sun Oct  5 08:35:12 PM CEST 2025
+
+结果目录: ./results_full_optimization_20251005_193134
+
+生成的文件:
+  - 策略1结果: ./results_full_optimization_20251005_193134/strategy1/
+  - 策略2结果: ./results_full_optimization_20251005_193134/strategy2/
+  - 策略3结果: ./results_full_optimization_20251005_193134/strategy3/
+  - 对比分析: ./results_full_optimization_20251005_193134/comparison/
+  - 运行日志: ./results_full_optimization_20251005_193134/run_log.txt
+  - 最终报告: ./results_full_optimization_20251005_193134/FINAL_REPORT.md
+
+下一步:
+  1. 查看最终报告: cat ./results_full_optimization_20251005_193134/FINAL_REPORT.md
+  2. 查看对比分析: cat ./results_full_optimization_20251005_193134/comparison/comparison_summary.json
+  3. 查看可视化图表: 打开 ./results_full_optimization_20251005_193134/comparison/*.png
+
+========================================================================

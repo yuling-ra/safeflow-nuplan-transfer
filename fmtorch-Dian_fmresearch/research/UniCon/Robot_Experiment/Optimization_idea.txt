@@ -1,0 +1,376 @@
+Simulation frequence= High frequence=Original frequence: 500Hz (0.002sec as dt)
+Low frequence = Down Sampled frequence: 5Hz (0.2 sec as dt), 1% of original frequence
+For one standard trajectory (enough for completing draw one "8"): 7736 original steps / 78 down sampled steps
+Robot: Franka Research 3 (fr3) with 7 DoF
+Robot State: q,dq
+Robot Control : tau_feedforward
+
+
+Known Fact: 
+
+replay direct downsampled tau_ff with ZOH have still satisfying performance and low error 
+=> only learn 1% tau_ff can hold the minimal information for correct control
+
+In rough dt(0.2 sec), the dynamic forward simulation between tau_ff and states is different from high frequence
+=> In OCP low frequence state can't guide low frequence Control correctly
+
+
+
+0. Training Data for Flow Matching Model:
+{q,dq,tau_feedforward(tau_ff)} in down sampled frequence + initial condition (q,dq tau_feedforward at t=0)
+shape : [7,3,78] as [DoF, types, steps]
+condition: initial condition
+
+
+1. During ODE:
+CBF_ODE: Use Jacobian to calculate the end effector position (eeffpos) in low frequence, make sure they are in the tendency out of obstacles by changing the control in low frequence(delta H func >0 )
+CLF_ODE:Use ZOH extend tau_ff sequence to high frequence(tau_ff_ZOH) and do forward dynamic simulation, calculate the dynamic residual by calculating the difference between {reached states in low frequence (low_resolution_key_frames) based on current tau_ff_ZOH} and Robot state from flow matching ODE in current t,  make sure the dynamic residual is decreasing (delta Res < 0)
+
+Formulation of QP:
+Cost: L2{delta tau_ff}
+Variable: delta tau_ff
+Constraint: CBF_ODE,CLF_ODE, delta tau_ff<cap
+Solver: TBD
+
+2. After ODE(Post-polish):
+CBF： include 3 to 5 cubic interpolation between 0.2 sec (low frequence) is still safe (eeffpos out of obstacles)  
+CLF： full dynamic consistency 
+
+Formulation of Problem:
+
+Variable:parametrize control value at each low frequence control value key points(78*7*2) (ϕ0=常值（DC），ϕ1=线性坡度（三角帽）)
+
+SCP + QP（δu-SCP + OSQP）: Detailes TBD
+
+
+
+3. Final safety filter
+CBF： full points in 500Hz is still safe (eeffpos out of obstacles)  
+CLF： full dynamic consistency,0 Error
+Variable:parametrize control value at each low frequence control value key points(78*7*2) (ϕ0=常值（DC），ϕ1=线性坡度（三角帽）)
+
+mppi polish, doing parallel forward polish, encourage smooth state
+pick the control candidates sequence with lowest cost + safe based on forward result (totally safe and consistency guarantee)   
+
+把“CLF_ODE（让残差下降）”从“约束”改成目标项或“收缩不等式”
+有限差分步长(中心差分)
+
+
+
+
+
+
+after GPT help:
+TXT — “Franka 8-shape @ X=0.4” Pipeline + Toy-ODE Setup (plain text)
+
+====================================================================
+A) Simulation / Robot / Known Facts
+
+High frequency (original): 500 Hz → dt = 0.002 s
+Low frequency (down-sampled): 5 Hz → Δ = 0.2 s (1% of 500 Hz)
+One standard trajectory: 7736 high-freq steps → 78 low-freq steps
+
+Robot: Franka Research 3 (fr3), 7 DoF
+State: x = [q(7), dq(7)] ∈ R^14
+Ctrl: τ_ff ∈ R^7 (pure feedforward joint torque)
+
+Known fact:
+
+Replay of directly down-sampled τ_ff with ZOH (zero-order hold) still yields low error at 500 Hz
+⇒ learning only 1% τ_ff retains minimal information required for correct control.
+
+Observed issue:
+
+With rough step Δ=0.2 s, low-freq forward dynamics between (τ_ff, x) differs from the 500 Hz result
+⇒ in OCP, low-freq states cannot reliably guide low-freq controls unless we make the low-freq map
+consistent with the 500 Hz ZOH execution.
+
+Notation:
+
+N = 78 low-freq macro steps, k = 0..N−1, macro time t_k = k·Δ
+
+T = N·Δ total time; high-freq micro steps per macro: H = Δ/dt = 100
+
+Discrete ZOH-consistent macro flow F_Δ:
+x_{k+1} = F_Δ(x_k, u_k)
+defined as: reset to x_k, apply constant torque u_k for H=100 micro steps in MuJoCo (dt=0.002),
+read the terminal state as x_{k+1}.
+
+====================================================================
+B) Training data for Flow Matching (FM)
+
+Tensor (low-freq): {q, dq, τ_ff} + initial condition at t=0
+Shape: [DoF, types, steps] = [7, 3, 78] (types = {q, dq, τ})
+Condition (FM input): initial (q0, dq0, τ0). Store per-channel normalization (μ, σ).
+
+====================================================================
+C) Toy-ODE environment (fake ODE) — mathematical setup
+
+Goal: A controllable “idealized” evolution used ONLY to test the pipeline end-to-end.
+It does NOT replace MuJoCo. The final evaluation always uses 500 Hz MuJoCo forward.
+
+References (from the recorded 100% trajectory):
+
+x_ref(t) ∈ R^14 : reference state (interpolate the recorded q,dq)
+
+u_ref(t) ∈ R^7 : reference torque (recorded τ)
+
+Structured “wrong torque” generator:
+
+Phase drift δ(t) : e.g., δ_max ∈ [2 ms, 6 ms], sinusoidal or piecewise
+
+Bias b : e.g., 1–2 Nm on joints {2,3,4,5}, smaller on others
+
+Colored noise η(t) : AR(1): η_{t+1} = ρ η_t + σ ξ_t, ρ≈0.9, ξ_t~N(0,I)
+
+u_bad(t) = u_ref(t + δ(t)) + b + η(t)
+
+Schedules (make early steps strongly contracting for x, later steps pull u toward u_bad):
+
+α_x(t): decreases, e.g., α_x(t) = lerp(8.0 → 1.0, t/T)
+
+α_u(t): increases, e.g., α_u(t) = lerp(1.0 → 3.0, t/T)
+
+β(t) : blend from u_ref to u_bad late in time,
+e.g., β(t) = sigmoid(k*(t/T − 0.6)), k≈10
+
+Optional mild nonlinearity on state drift to add curvature:
+
+Γ_x(x,t) = λ · R(x) · (x − x_ref(t))
+where R(x) is a small state-dependent block rotation/scaling, λ∈[0.1, 0.3]
+
+Vector field (toy ODE):
+
+v_x(t) = α_x(t) · (x_ref(t) − x) + Γ_x(x,t)
+
+u_tgt(t) = (1 − β(t)) · u_ref(t) + β(t) · u_bad(t)
+
+v_u(t) = α_u(t) · (u_tgt(t) − u)
+
+Non-uniform micro time steps (K = 1000 toy-ODE steps; later steps smaller):
+
+weights w_k = γ^k, γ ∈ [0.995, 0.999]
+
+Δt_k = (w_k / Σ_{j=0}^{K−1} w_j) · T, k=0..K−1
+
+Toy-ODE update (per toy step k):
+
+x ← x + Δt_k · v_x(t_k)
+
+u ← clip( u + Δt_k · v_u(t_k), τ_min, τ_max )
+
+(Optional) every M toy steps or at macro boundaries t = k·Δ:
+invoke the low-freq δu-SCP + QP correction (Section D) and replace u_k
+
+Evaluation principle:
+
+The toy-ODE is a proposal dynamics to stress the pipeline.
+
+The ONLY ground-truth check remains the 500 Hz MuJoCo forward with ZOH-expanded controls.
+
+====================================================================
+D) During ODE (low-freq δu-SCP + QP)
+
+Objective: minimally adjust low-freq torques u_k so that the 500 Hz ZOH-consistent macro states
+match FM keyframes and satisfy sparse safety at macro nodes.
+
+Variables:
+
+δu = {δu_0..δu_{N−1}}, δu_k ∈ R^7 ; updated u_k ← u_k + α · δu_k (line search α)
+
+Macro flow (always 500 Hz + ZOH definition):
+
+x_{k+1} = F_Δ(x_k, u_k)
+
+Linearization (finite differences around (x_k, u_k), parallelized):
+
+A_k = ∂F_Δ/∂x_k ∈ R^{14×14} (centered FD, ε_q≈1e−5 rad, ε_dq≈2e−4 rad/s)
+
+B_k = ∂F_Δ/∂u_k ∈ R^{14×7} (ε_τ≈1e−3 Nm)
+Single-shooting sensitivities:
+
+S_{0,j} = 0
+
+S_{k+1,j} = A_k S_{k,j} for j<k ; S_{k+1,k} = B_k
+Linearized macro state:
+
+x̂_k(δu) ≈ x_k + Σ_{j<k} S_{k,j} δu_j
+
+QP subproblem (one per SCP iteration):
+
+Cost J = Σ_k || x̂_k − x_k^FM ||{Q}^2 + Σ_k || (u_k − u_k^FM) + δu_k ||{R}^2
++ λ_s Σ_k ||δu_k − δu_{k−1}||^2
+(EE(y,z) at plane X=0.4 has high weights in Q; moderate weights on q, smaller on dq)
+
+Constraints:
+(i) Sparse CBF at macro nodes k:
+g_k(x_k) + ∇g_k(x_k)^T [Σ_{j<k} S_{k,j} δu_j] ≥ margin (margin≈0.02 m)
+(∇g via EE Jacobian · outward normal; optional slack with large penalty)
+(ii) Torque box and trust region:
+τ_min − u_k ≤ δu_k ≤ τ_max − u_k, ||δu_k||∞ ≤ ρ_u (start ρ_u≈3 Nm)
+(iii) (Optional) Slew regularization in cost or box on δu_k − δu{k−1}
+
+Solver: OSQP (rho≈0.1, eps_abs/rel≈1e−4, max_iter up to 2e4, polish, warm-start)
+
+SCP outer loop: linearize → QP → line search α∈{1,0.5,0.25,0.1} accepted by 500 Hz forward
+stopping when EE-RMSE at macro nodes < 1–2 cm or relative improvement < 1e−3
+
+Remark on CLF_ODE:
+
+Treat “dynamic residual decreasing” as an objective (in J) rather than a hard constraint.
+We already enforce dynamics through F_Δ; the residual provides descent guidance.
+
+====================================================================
+E) After ODE (Post-polish via SCP+QP in coefficient space)
+
+Goal: refine 500 Hz behavior between macro nodes while preserving task shape and safety.
+
+Control parameterization per macro step k, per joint j:
+
+τ_k^j(t) = a_k^j · φ0(t) + b_k^j · φ1(t), t ∈ [0, Δ)
+φ0(t) ≡ 1 (DC), φ1(t) = 2t/Δ − 1 (linear slope “hat”)
+Variables:
+
+c_k = [a_k(7); b_k(7)] ∈ R^{14}, total c ∈ R^{14N}
+Initialization:
+
+a_k = u_k^* (from ODE), b_k = 0
+
+Inner points between low-freq frames (per step):
+
+M = 3 inner times t = {0.05, 0.10, 0.15} s (25/50/75 micro steps), extend adaptively if needed
+
+Forward map (still 500 Hz + ZOH using φ0/φ1 expansion per micro step):
+
+Build sub-segment flows within each macro step; collect states at inner points and macro end
+
+Linearization (finite differences, parallel):
+
+For sub-segment r within step k:
+A_{k,r} = ∂F_sub/∂x_{k,r}, B_{k,r}^{(c)} = ∂F_sub/∂c_k
+
+Chain them to get J_{k,i} = ∂x_{k,i}/∂c (lower-triangular, very sparse)
+
+QP per SCP iteration (coefficient space):
+
+Cost:
+J = Σ_k || x_{k,end} − x_k^ref ||Q^2
++ w_inner Σ{k,i} || x_{k,i} − x_{k,i}^{ref} ||{Q_inner}^2
++ Σ_k ( ||a_k − a_k^(0)||^2{R_a} + ||b_k||^2_{R_b} )
++ λ_a Σ_k ||a_{k+1} − a_k||^2 + λ_b Σ_k ||b_{k+1} − b_k||^2
+(Q: EE(y,z) high weight; Q_inner smaller; R_a≈1.0, R_b≈0.1, λ_a≈0.1, λ_b≈0.05)
+
+Constraints:
+(i) Inner-point hard safety (activate only if g < τ_act≈0.08 m):
+g_{k,i}(x_{k,i}) + ∇g_{k,i}^T J_{k,i} δc ≥ margin (≈0.02 m), optional slack
+(ii) Torque box/slew: either evaluate on sampled micro steps via Φ_t δc bounds,
+or approximate as |a_k|≤τ_max, |b_k|≤b_max (and hard-check at acceptance)
+(iii) Trust region on coefficients: ||δc||_∞ ≤ ρ_c (e.g., 0.8)
+
+Solver: OSQP; SCP 3–6 iterations; line search by 500 Hz forward admissibility
+
+Output of post-polish:
+
+Coefficients {a_k,b_k}, expanded 500 Hz torque τ(t) with smooth intra-macro behavior,
+macro nodes aligned (cm-level), inner-segment safety satisfied, torque limits respected.
+
+====================================================================
+F) Final safety filter (MPPI polish + alignment)
+
+Space: coefficient space c = {a_k,b_k}, warm-start at post-polish solution c*.
+
+Sampling (per iteration):
+
+128–256 samples; time-correlated noise (AR(1), ρ≈0.85–0.9); larger variance only on
+macro steps near obstacles or with poorer margins; joint-wise scaling (2/3/4/5 larger)
+
+Two-stage evaluation for speed:
+
+Stage-A (coarse): check 3–5 inner points per macro + geometric lower bounds;
+enforce torque/slew boxes; early-stop and discard unsafe
+
+Stage-B (full): 500 Hz full rollout for the top 40–60% survivors; early-stop on violation
+
+Cost (lower is better):
+
+Macro node alignment (EE(y,z) high weight) + soft barrier w_b·Σ ReLU(margin − g)^2
+
+minimal change ||c − c*|| + smoothness; optional tiny phase alignment in evaluation only
+
+Optional safety projection (fast QP):
+
+For near-miss samples, solve min||δc||^2 s.t. linearized g ≥ margin at a few tight inner points,
+then re-evaluate (increases elite rate)
+
+Update & acceptance:
+
+MPPI weights: w_i = exp(−(J_i − min J)/λ); update mean/cov only on elite (top 10–20%)
+
+Mixed line search on mean: c_new = (1−α) c* + α c̄, α ∈ {1, 0.5, 0.25}
+accept only if full 500 Hz rollout is safe and cost improves; otherwise shrink α
+
+Output:
+
+Final τ(t) at 500 Hz that is fully safe (all points), dynamically consistent by definition
+(it is obtained by forward simulation), and aligned to macro/task shape.
+
+====================================================================
+G) Metrics & logging
+
+Per stage, log:
+
+Macro node EE RMSE (cm), min distance (mm), torque/slew violation ratio
+
+Objective J decrease, trust-region hits, line-search α
+
+Final: EE trajectory  match on plane X=0.4 (“8” shape), phase drift (ms), total torque variation
+
+Pass criteria (typical):
+
+Macro nodes EE RMSE < 1–2 cm; global min distance ≥ 2 cm; torque/slew within limits;
+
+MPPI final improves cost vs post-polish and remains fully safe.
+
+====================================================================
+H) Suggested defaults (quick start)
+
+Finite difference eps: ε_q=1e−5 rad, ε_dq=2e−4 rad/s, ε_τ=1e−3 Nm
+Safety margin: 0.02 m; activation τ_act=0.08 m
+Low-freq trust region: ρ_u ≈ 3 Nm; Post-polish: ||δc||_∞ ≤ 0.8
+Weights (typical): Q_EE(y,z)=5e3, Q_q=20, Q_dq=5; R=I; λ_s=1e−2
+Post-polish: R_a=1.0, R_b=0.1, λ_a=0.1, λ_b=0.05
+OSQP: rho=0.1, eps_abs/rel=1e−4, max_iter=2e4, polish, warm_start
+MPPI: 128–256 samples; temperature λ ≈ std(cost) × (0.5–1.0)
+
+====================================================================
+I) Pseudocode skeleton (high level)
+Inputs: recorded 100% trajectory → x_ref(t), u_ref(t)
+Downsample to 1% to get FM keyframes x_FM[k], initialize u_k from downsampled τ
+(C) Toy-ODE loop (K micro steps with decreasing Δt_k)
+
+for k in 0..K−1:
+build u_bad(t_k), schedules α_x, α_u, β, nonlinearity Γ_x
+x, u ← x + Δt_kv_x, clip(u + Δt_kv_u)
+if macro boundary or every M toy steps:
+# (D) low-freq δu-SCP + QP
+compute F_Δ Jacobians by FD; assemble & solve OSQP; line search; update u_k
+
+(E) Post-polish in coefficient space
+
+init a_k = u_k, b_k = 0
+repeat 3–6 times:
+expand τ(t) from {a,b}, forward 500 Hz, collect inner points
+linearize sub-segments → J; assemble OSQP QP; line search; update {a,b}
+
+τ_post(t) obtained
+(F) MPPI polish
+
+for iter=1..2..4:
+sample coefficients around {a,b}; Stage-A coarse cull; Stage-B full rollout
+compute costs; elite update; mixed line search to get c_final
+
+Final τ_final(t) = expand(c_final), forward 500 Hz → deliver trajectory
+
+====================================================================
+
+End of TXT.

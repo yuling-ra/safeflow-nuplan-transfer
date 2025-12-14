@@ -1,0 +1,50 @@
+data:
+  # path 已被移除，将自动使用 research/UniCon/raceline/train/dataset/ 目录下的所有 .npz 文件
+  batch_size: 2048
+  val_split: 0.1
+  workers: 4
+  theta_sincos: false                  # 如需把theta变为(sin,cos)就开
+  cache_scaler: true
+
+model:
+  type: "flow_unet"                    # 同一实现里，通过下面开关切分支
+  cond_dim: 4                          # x0s=[x,y,theta,velocity] (若 theta_sincos=true 则+1)
+  mid:
+    image_channels: 16                 # ≥16 便于通道注意力
+    image_hw: 8                        # 8x8 特征图
+  dims:
+    time_dim: 256
+    up_width: 512
+    up_depth: 4
+  unet:
+    channels: 32
+    num_res_blocks: 1
+    attn_resolutions: [4]
+  attn:
+    enable_cbam: true                  # ← 设为 true 即启用 CBAM 分支
+    reduction: 16
+    spatial_kernel: 3
+  fusion: "film"                       # "film" | "mha"（后续你可加）
+  dropout: 0.1
+
+train:
+  epochs: 100
+  amp: true
+  ema: { enable: true, decay: 0.999 }
+  clip_grad_norm: 1.0
+  grad_accum_steps: 1
+  optimizer: { name: "adamw", lr: 5e-4, wd: 1e-2, betas: [0.9, 0.999] }
+  scheduler: { name: "cosine", warmup_steps: 2000, min_lr: 5e-6 }
+  val_interval_steps: 1000
+  log_interval: 100
+  save_every_epoch: 1
+  seed: 42
+  device: "cuda"
+
+infer:
+  ode: { atol: 1e-5, rtol: 1e-5, method: "dopri5" }
+
+log:
+  aim: { enable: true, repo: "aimlogs", experiment: "fm_full_traj" }
+  csv: { enable: true }
+  save_dir: "outputs"

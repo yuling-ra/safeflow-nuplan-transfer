@@ -1,0 +1,34 @@
+# Flow Matching + CBF Educational Tutorial
+# File Manifest
+# Generated: 2025-01-09
+
+## Core Files
+inference_maze_flow_educational.ipynb    # Main tutorial notebook (37 cells)
+README.md                                 # Quick start guide
+
+## Model and Data
+checkpoints/maze_fixed_point_best.pt     # Pre-trained model weights (~100MB)
+data/trajectories_fixed_point.npy        # Training data for comparison
+
+## Documentation
+docs/USAGE_GUIDE.md                      # Detailed usage guide
+docs/PARAMETER_TUNING.md                 # Complete parameter tuning guide
+docs/FAQ.md                              # Frequently asked questions
+docs/QUICK_START.md                      # Quick start summary
+
+## Output Directory
+results/                                  # Generated results will be saved here
+
+## Total Size
+~200MB (mainly model weights)
+
+## Dependencies
+- Python 3.8+
+- PyTorch 1.10+
+- torchdiffeq
+- matplotlib
+- numpy
+- jupyter
+
+## Quick Start
+jupyter notebook inference_maze_flow_educational.ipynb

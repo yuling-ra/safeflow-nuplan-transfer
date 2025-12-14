@@ -1,0 +1,63 @@
+data:
+  batch_size: 2048
+  val_split: 0.1
+  workers: 4
+  theta_sincos: false
+  cache_scaler: true
+model:
+  name: flow_unet_cbam
+  width: 1024
+  depth: 5
+  img_shape:
+    C: 16
+    H: 28
+    W: 28
+  unet:
+    model_channels: 32
+    num_res_blocks: 2
+    attention_resolutions:
+    - 14
+    - 7
+    channel_mult:
+    - 1
+    - 2
+    - 4
+  cbam:
+    reduction: 16
+    heads: 4
+    kernel_size: 7
+train:
+  epochs: 2000
+  amp: true
+  ema:
+    enable: true
+    decay: 0.999
+  clip_grad_norm: 1.0
+  grad_accum_steps: 1
+  optimizer:
+    name: adamw
+    lr: 0.0001
+    wd: 0.01
+    betas:
+    - 0.9
+    - 0.999
+  scheduler:
+    name: cosine
+    warmup_steps: 500
+    min_lr: 1.0e-06
+  val_interval_steps: 1000
+  log_interval: 100
+  save_every_epoch: 50
+  seed: 42
+  device: cuda
+  lr: 0.0001
+log:
+  save_dir: ./outputs/cbam_base_run/trial_72_lr_0.0001_mc_32
+  aim:
+    enable: true
+    repo: aimlogs
+    experiment: fm_cbam_trial_72
+  csv:
+    enable: true
+  save_ckpt_every_n_epochs: 50
+  save_best_val: true

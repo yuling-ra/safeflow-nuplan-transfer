@@ -1,0 +1,25 @@
+# Python / virtual env
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Data / outputs
+data/
+datasets/
+runs/
+logs/
+*.npy
+*.npz
+*.csv
+*.pt
+*.pth
+*.ckpt
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+

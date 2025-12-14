@@ -1,0 +1,213 @@
+<mujoco model="fr3 scene">
+  <include file="fr3.xml"/>
+
+  <statistic center="0.2 0 0.4" extent=".8"/>
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <global azimuth="120" elevation="-20"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3"
+      markrgb="0.8 0.8 0.8" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+  </asset>
+
+  <worldbody>
+  <!-- Calibrated circle markers: center=(0.5999, 0.0404, 0.5322), R=0.1005 -->
+  <!-- <body name="circle_markers_calibrated" pos="0.45 0.040372 0.532215">
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.100450 0.000000" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.100068 0.008755" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.098924 0.017443" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.097027 0.025998" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.094392 0.034356" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.091039 0.042452" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.086992 0.050225" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.082284 0.057616" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.076949 0.064568" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.071029 0.071029" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.064568 0.076949" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.057616 0.082284" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.050225 0.086992" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.042452 0.091039" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.034356 0.094392" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.025998 0.097027" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.017443 0.098924" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.008755 0.100068" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.000000 0.100450" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.008755 0.100068" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.017443 0.098924" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.025998 0.097027" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.034356 0.094392" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.042452 0.091039" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.050225 0.086992" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.057616 0.082284" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.064568 0.076949" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.071029 0.071029" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.076949 0.064568" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.082284 0.057616" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.086992 0.050225" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.091039 0.042452" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.094392 0.034356" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.097027 0.025998" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.098924 0.017443" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.100068 0.008755" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.100450 0.000000" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.100068 -0.008755" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.098924 -0.017443" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.097027 -0.025998" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.094392 -0.034356" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.091039 -0.042452" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.086992 -0.050225" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.082284 -0.057616" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.076949 -0.064568" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.071029 -0.071029" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.064568 -0.076949" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.057616 -0.082284" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.050225 -0.086992" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.042452 -0.091039" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.034356 -0.094392" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.025998 -0.097027" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.017443 -0.098924" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.008755 -0.100068" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 -0.000000 -0.100450" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.008755 -0.100068" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.017443 -0.098924" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.025998 -0.097027" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.034356 -0.094392" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.042452 -0.091039" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.050225 -0.086992" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.057616 -0.082284" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.064568 -0.076949" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.071029 -0.071029" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.076949 -0.064568" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.082284 -0.057616" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.086992 -0.050225" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.091039 -0.042452" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.094392 -0.034356" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.097027 -0.025998" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.098924 -0.017443" contype="0" conaffinity="0" group="5"/>
+    <geom type="sphere" size="0.004" rgba="0.9 0.2 0.2 0.9" pos="0 0.100068 -0.008755" contype="0" conaffinity="0" group="5"/>
+  </body> -->
+  <!-- === 固定散点可视化（工具尖端轨迹）=== -->
+    <body name="trace_points"  mocap="true" pos="-0.15 0 0.15">
+      <!-- 提示：size=0.006 为 6mm 半径；需要更细更密，可复制下列行或改 size/rgba -->
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5985 0.0496 0.5208"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5986 0.0033 0.5668"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5990 -0.0538 0.6212"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5998 -0.1041 0.6558"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.6002 -0.1478 0.6612"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.6004 -0.1807 0.6369"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.6003 -0.2001 0.5893"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.6002 -0.2062 0.5289"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.6002 -0.1987 0.4690"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.6000 -0.1773 0.4222"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5996 -0.1420 0.4000"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5993 -0.0954 0.4110"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5990 -0.0405 0.4536"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5983 0.0194 0.5084"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5980 0.0798 0.5695"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5984 0.1372 0.6216"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5990 0.1888 0.6534"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5995 0.2322 0.6580"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5998 0.2648 0.6341"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5997 0.2849 0.5870"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5996 0.2909 0.5279"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5995 0.2830 0.4697"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5996 0.2610 0.4254"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5997 0.2261 0.4055"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5995 0.1804 0.4151"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5990 0.1266 0.4509"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5986 0.0679 0.5052"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5986 0.0082 0.5658"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5988 -0.0509 0.6199"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5994 -0.1053 0.6533"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5997 -0.1506 0.6583"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5998 -0.1845 0.6343"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.6001 -0.2040 0.5865"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.6001 -0.2096 0.5268"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5999 -0.2007 0.4682"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5998 -0.1779 0.4244"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5997 -0.1421 0.4056"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5994 -0.0947 0.4166"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5988 -0.0386 0.4550"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5980 0.0225 0.5124"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5977 0.0840 0.5745"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5982 0.1422 0.6261"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5989 0.1942 0.6558"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5996 0.2372 0.6562"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5998 0.2688 0.6281"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5997 0.2870 0.5771"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5995 0.2907 0.5159"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5995 0.2793 0.4585"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5996 0.2539 0.4183"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5996 0.2154 0.4050"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5993 0.1527 0.4312"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5988 0.1097 0.4654"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5985 0.0491 0.5243"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5987 -0.0118 0.5850"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5991 -0.0700 0.6334"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5997 -0.1215 0.6579"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5998 -0.1631 0.6533"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5998 -0.1924 0.6206"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5998 -0.2075 0.5674"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5998 -0.2082 0.5063"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5998 -0.1947 0.4513"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5997 -0.1676 0.4151"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.6001 -0.1266 0.4035"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5991 -0.0772 0.4270"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5984 -0.0188 0.4731"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5977 0.0429 0.5340"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5976 0.0889 0.5799"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5984 0.1594 0.6385"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5991 0.2080 0.6592"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5997 0.2473 0.6511"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5998 0.2750 0.6164"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5996 0.2894 0.5628"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5995 0.2873 0.4878"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5996 0.2478 0.4138"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5994 0.1810 0.4146"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5992 0.1451 0.4364"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5987 0.0876 0.4858"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5985 0.0278 0.5458"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5988 -0.0314 0.6027"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5993 -0.0867 0.6436"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5997 -0.1346 0.6596"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5999 -0.1725 0.6471"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5997 -0.2016 0.5963"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5996 -0.2090 0.5537"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5997 -0.2066 0.4937"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.6020 -0.1862 0.4366"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.6017 -0.1583 0.4016"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.6007 -0.1185 0.4001"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5991 -0.0696 0.4312"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5982 -0.0119 0.4796"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5976 0.0487 0.5399"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5976 0.0936 0.5845"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5985 0.1630 0.6408"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5992 0.2110 0.6595"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5998 0.2496 0.6495"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5999 0.2709 0.6244"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5997 0.2878 0.5733"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5995 0.2913 0.5283"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5995 0.2738 0.4454"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5996 0.2454 0.4123"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5996 0.2050 0.4063"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5991 0.1413 0.4392"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5987 0.0983 0.4758"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5985 0.0386 0.5349"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5987 -0.0209 0.5933"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5991 -0.0597 0.6258"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5996 -0.1267 0.6589"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5999 -0.1664 0.6513"/>
+      <site type="sphere" size="0.006" rgba="1 0.2 0.2 1"     pos="0.5998 -0.1939 0.6174"/>
+    </body>
+
+
+    <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>
+    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+  </worldbody>
+</mujoco>
