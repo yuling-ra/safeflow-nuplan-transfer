@@ -1,6 +1,0 @@
-numpy>=1.22
-scipy>=1.10
-scikit-learn>=1.2
-torch>=2.1
-tqdm>=4.66
-orjson>=3.9 
