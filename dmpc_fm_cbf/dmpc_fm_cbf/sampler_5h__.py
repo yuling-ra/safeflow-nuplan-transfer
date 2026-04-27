@@ -16,29 +16,14 @@ from __future__ import annotations
 import numpy as np
 import torch
 import torchdiffeq
+import importlib
 
-try:
-    from dmpc_fm_cbf.cbf_project_velocity_sgfm import cbf_project_velocity_sgfm as _cbf_project_fn
-except ImportError:
-    try:
-        from cbf_project_velocity_sgfm import cbf_project_velocity_sgfm as _cbf_project_fn
-    except ImportError:
-        _cbf_project_fn = None
+from dmpc_fm_cbf import cbf_project_velocity_sgfm
 
 
 # ================================================================
 # 工具函数
 # ================================================================
-
-def _resolve_cbf_projector():
-    if _cbf_project_fn is None:
-        raise ImportError(
-            "Could not import cbf_project_velocity_sgfm. "
-            "Check that dmpc_fm_cbf package is installed or "
-            "cbf_project_velocity_sgfm.py is in path."
-        )
-    return _cbf_project_fn
-
 
 def _to_ellipse_list(ellipses):
     if ellipses is None:
@@ -49,6 +34,20 @@ def _to_ellipse_list(ellipses):
         r = float(e.get("radius", e.get("r", 0.3)))
         out.append({"center": c, "radius": r})
     return out
+
+
+def _resolve_cbf_projector():
+    if callable(cbf_project_velocity_sgfm):
+        return cbf_project_velocity_sgfm
+    if hasattr(cbf_project_velocity_sgfm, "cbf_project_velocity_sgfm"):
+        fn = getattr(cbf_project_velocity_sgfm, "cbf_project_velocity_sgfm")
+        if callable(fn):
+            return fn
+    mod = importlib.import_module("dmpc_fm_cbf.cbf_project_velocity_sgfm")
+    fn  = getattr(mod, "cbf_project_velocity_sgfm", None)
+    if callable(fn):
+        return fn
+    raise TypeError("Could not resolve callable cbf_project_velocity_sgfm projector.")
 
 
 def _prepare_cond_tensor(cond, *, device, dtype):
@@ -84,7 +83,7 @@ def _prepare_xy_norm(xy_norm, xy_world, scaler, *, device, dtype, name):
 
 
 # ================================================================
-# CBF gate 函数
+# ★ CBF gate 函数
 #
 # gate(tau, x_norm, ellipses) = time_gate(tau) × proximity_gate(x, ellipses)
 #
@@ -95,11 +94,11 @@ def _prepare_xy_norm(xy_norm, xy_world, scaler, *, device, dtype, name):
 #   使用 smoothstep：3t²-2t³，比线性更平滑，无突变
 #
 # proximity_gate(x, ellipses):
-#   对每个椭圆计算势能 P = 1 - exp(-k * relu(-h))
+#   对每个椭圆计算势能 P = exp(-k * max(h, 0))
 #   h = dist - radius（CBF 函数值，h>0 安全，h<0 不安全）
 #   离障碍物越近 h 越小，势能越大，gate 越大
-#   取所有椭圆所有时间步中最大的 P（最危险的那个决定强度）
-#   范围 [0, 1]，远离障碍物时为 0，进入危险区域时趋近于 1
+#   取所有椭圆的最大势能（最危险的那个障碍物决定强度）
+#   范围 (0, 1]，远离障碍物时趋近于 0，进入危险区域时趋近于 1
 # ================================================================
 
 def _time_gate(tau: float, tau0: float, tau1: float) -> float:
@@ -125,25 +124,29 @@ def _proximity_gate(
     """
     势能场门控：
       对每个障碍物椭圆计算 h = dist - radius
-      P = 1 - exp(-k * relu(-h))
-        h > 0（安全区）：penalty=0，P=0，gate 贡献为 0
-        h < 0（危险区）：penalty>0，P→1，gate 贡献为 1
-      取所有椭圆、所有时间步中最大的 P
+      P = 1 - exp(-k * max(-h, 0))  即 h < 0（在障碍物内）时 P→1
+      等价写法：P = 1 - exp(-k * relu(-h))
+      取所有椭圆的最大 P
+
+    h > 0（安全区）：P → 0，CBF gate 贡献小
+    h < 0（危险区）：P → 1，CBF gate 贡献大
     """
     if len(ellipses_list) == 0:
         return 0.0
 
-    xy    = x_norm_1x2T[0]   # (2, T)
+    xy = x_norm_1x2T[0]  # (2, T)
     max_p = 0.0
 
     for e in ellipses_list:
         center = torch.tensor(e["center"], dtype=xy.dtype, device=xy.device)
         radius = float(e["radius"])
 
-        dist    = torch.norm(xy - center.unsqueeze(1), dim=0)    # (T,)
-        h       = dist - radius                                   # (T,)
-        penalty = torch.relu(-h)                                  # (T,)
-        P       = float((1.0 - torch.exp(-k * penalty)).max())   # 最危险时间步的 P
+        dist = torch.norm(xy - center.unsqueeze(1), dim=0)  # (T,)
+        h    = dist - radius                                  # (T,)
+
+        # relu(-h)：只有在障碍物内部或边界处才有值
+        penalty = torch.relu(-h)                              # (T,)
+        P       = float(1.0 - torch.exp(-k * penalty).min()) # 最危险的时间步
         max_p   = max(max_p, P)
 
     return float(np.clip(max_p, 0.0, 1.0))
@@ -198,14 +201,14 @@ def piecewise_sample_fm_5ch_with_cbf(
     model_5ch     = model_5ch.to(dev).eval()
     cbf_projector = _resolve_cbf_projector()
 
-    ellipses_list   = _to_ellipse_list(ellipses)
-    cbf_kwargs      = {} if cbf_kwargs is None else dict(cbf_kwargs)
-    cond_t          = _prepare_cond_tensor(cond, device=dev, dtype=torch.float32)
+    ellipses_list = _to_ellipse_list(ellipses)
+    cbf_kwargs    = {} if cbf_kwargs is None else dict(cbf_kwargs)
+    cond_t        = _prepare_cond_tensor(cond, device=dev, dtype=torch.float32)
     start_xy_norm_t = _prepare_xy_norm(
         start_xy_norm, start_xy, scaler,
         device=dev, dtype=torch.float32, name="start_xy"
     )
-    goal_xy_norm_t  = _prepare_xy_norm(
+    goal_xy_norm_t = _prepare_xy_norm(
         goal_xy_norm, goal_xy, scaler,
         device=dev, dtype=torch.float32, name="goal_xy"
     )
@@ -268,17 +271,17 @@ def piecewise_sample_fm_5ch_with_cbf(
             g_prox = _proximity_gate(x_norm[:, 0:2, :], ellipses_list, k=prox_k)
             gate   = float(g_time * g_prox)
 
-            if gate >= 1e-6:                           # gate 为 0 时跳过，省计算
+            if gate >= 1e-6:                          # gate 为 0 时跳过，省计算
                 v_xy_safe = cbf_projector(
-                    x_norm_1x2T=x_norm[:, 0:2, :],    # (1, 2, T)
-                    v_nom_1x2T=v_pred[:, 0:2, :],      # (1, 2, T)
+                    x_norm_1x2T=x_norm[:, 0:2, :],   # (1, 2, T)
+                    v_nom_1x2T=v_pred[:, 0:2, :],     # (1, 2, T)
                     ellipses=ellipses_list,
-                    gate_scalar=gate,                   # 唯一 gate
+                    gate_scalar=gate,                  # 唯一 gate
                     **cbf_kwargs,
-                )                                       # (1, 2, T)
+                )                                      # (1, 2, T)
 
                 v_pred = v_pred.clone()
-                v_pred[:, 0:2, :] = v_xy_safe          # 写回 XY，其余通道不变
+                v_pred[:, 0:2, :] = v_xy_safe         # 写回 XY，其余通道不变
 
         return v_pred.reshape(-1)
 
