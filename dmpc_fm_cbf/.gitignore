@@ -1,0 +1,9 @@
+*.zip
+*.npy
+*.npz
+*.pt
+*.pth
+*.ckpt
+.venv/
+cache/
+datasets/
