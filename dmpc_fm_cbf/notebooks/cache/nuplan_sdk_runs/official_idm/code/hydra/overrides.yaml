@@ -1,0 +1,6 @@
+- +simulation=closed_loop_nonreactive_agents
+- planner=idm_planner
+- scenario_filter=one_of_each_scenario_type
+- scenario_builder=nuplan
+- group=idm_planner
+- output_dir=/new_world/cockatiel/ra/safeflow-nuplan-transfer/dmpc_fm_cbf/notebooks/cache/nuplan_sdk_runs/official_idm

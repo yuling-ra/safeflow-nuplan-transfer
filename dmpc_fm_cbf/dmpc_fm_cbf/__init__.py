@@ -48,4 +48,51 @@ _safe_export("dmpc_fm_cbf.dataset", ["make_center_to_ring_dataset_tracking_oc", 
 _safe_export("dmpc_fm_cbf.utils", ["set_seed", "get_device"])
 _safe_export("dmpc_fm_cbf.cbf_project_velocity_sgfm", ["cbf_project_velocity_sgfm"])
 _safe_export("dmpc_fm_cbf.sampler_5h", ["piecewise_sample_fm_5ch_with_cbf", "split_and_denormalize_5ch"])
-
+_safe_export(
+    "dmpc_fm_cbf.nuplan_benchmark",
+    [
+        "BenchmarkConfig",
+        "ScenarioRecord",
+        "EpisodeMetrics",
+        "discover_scenarios",
+        "sample_balanced_scenarios",
+        "load_scene_bundle",
+        "build_planner",
+        "run_episode",
+        "run_benchmark",
+        "aggregate_metrics",
+    ],
+)
+_safe_export(
+    "dmpc_fm_cbf.nuplan_sdk_adapter",
+    [
+        "OfficialPlannerSpec",
+        "NuPlanSimulationConfig",
+        "PLANNER_REGISTRY",
+        "build_idm_planner",
+        "build_pdm_closed_planner",
+        "build_nuplan_scenario_builder",
+        "build_scenario_filter",
+        "build_run_simulation_command",
+        "shell_command_string",
+        "recommended_env",
+        "format_env_exports",
+    ],
+)
+_safe_export(
+    "dmpc_fm_cbf.paper_experiment_reporting",
+    [
+        "build_method_metadata",
+        "attach_method_metadata",
+        "summarize_metrics",
+        "build_zero_shot_table",
+        "build_finetune_table",
+        "plot_zero_shot_comparison",
+        "plot_regime_comparison",
+        "plot_ablation",
+        "load_metrics_csv",
+        "load_external_baseline_csv",
+        "merge_metrics_tables",
+        "make_figure_paths",
+    ],
+)
