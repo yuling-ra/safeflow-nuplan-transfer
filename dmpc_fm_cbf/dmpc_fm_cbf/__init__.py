@@ -85,6 +85,8 @@ _safe_export(
         "build_method_metadata",
         "attach_method_metadata",
         "summarize_metrics",
+        "add_paper_metric_aliases",
+        "build_paper_metric_table",
         "build_zero_shot_table",
         "build_finetune_table",
         "plot_zero_shot_comparison",

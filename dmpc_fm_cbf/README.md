@@ -50,11 +50,24 @@ xsA, xsB = two_car_fm_dmpc(
 )
 ```
 
+## nuPlan 闭环仿真
+
+仓库内已经包含 SafeFlow 的 nuPlan planner adapter、Hydra 配置、仿真入口和 NuBoard 入口，不依赖 Flow-Planner 仓库：
+
+```bash
+cd dmpc_fm_cbf
+./scripts/launch_sim_safeflow.sh
+./scripts/launch_nuboard_safeflow.sh
+```
+
+默认运行 sibling `nuplan-devkit` 中的 mini 数据集，结果写入 `/tmp/safeflow_exp`。完整配置和环境变量说明见 [docs/SAFEFLOW_NUPLAN_SIMULATION.md](docs/SAFEFLOW_NUPLAN_SIMULATION.md)。
+
 ## 模块结构
 
 ```
 dmpc_fm_cbf/
 ├── __init__.py          # 主入口
+├── safeflow_nuplan_planner.py # nuPlan 闭环 planner adapter
 ├── models.py            # 神经网络 (SimpleUNet1D, VelocityMLP)
 ├── cbf.py               # 控制屏障函数
 ├── canonical.py         # 坐标变换

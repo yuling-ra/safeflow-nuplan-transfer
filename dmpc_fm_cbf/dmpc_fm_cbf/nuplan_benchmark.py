@@ -63,7 +63,7 @@ class BenchmarkConfig:
                 / "dmpc_fm_cbf"
                 / "notebooks"
                 / "cache"
-                / "model_vel.pt"
+                / "model_vel_5ch_canonical_r.pt"
             )
 
     @property
@@ -190,6 +190,18 @@ def load_model_or_none(cfg: BenchmarkConfig, device: str):
     )
     ckpt = torch.load(cfg.model_ckpt, map_location=device)
     state_dict = ckpt["model_state_dict"] if isinstance(ckpt, dict) and "model_state_dict" in ckpt else ckpt
+    ckpt_in = state_dict.get("conv_in.weight")
+    ckpt_out = state_dict.get("conv_out.2.weight")
+    ckpt_in_channels = None if ckpt_in is None else int(ckpt_in.shape[1])
+    ckpt_out_channels = None if ckpt_out is None else int(ckpt_out.shape[0])
+    if ckpt_in_channels != model.in_channels or ckpt_out_channels != model.out_channels:
+        raise ValueError(
+            f"Checkpoint channel mismatch for {cfg.model_ckpt}: "
+            f"checkpoint is {ckpt_in_channels}->{ckpt_out_channels} channels, "
+            f"but the nuPlan transfer benchmark expects {model.in_channels}->{model.out_channels}. "
+            "Use a checkpoint trained with in_channels=5,out_channels=5, or instantiate/load a 2-channel "
+            "model only for the old XY trajectory workflow."
+        )
     model.load_state_dict(state_dict)
     return model.to(device).eval()
 

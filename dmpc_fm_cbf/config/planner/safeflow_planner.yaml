@@ -1,0 +1,40 @@
+safeflow_planner:
+  _target_: dmpc_fm_cbf.safeflow_nuplan_planner.SafeFlowNuPlanPlanner
+  _convert_: all
+
+  ckpt_path: ???
+  safeflow_project_root: ???
+  device: cpu
+
+  model_trajectory_steps: 60
+  trajectory_sample_interval: 0.1
+  local_goal_distance_m: 3.0
+  minimum_goal_distance_m: 0.5
+
+  max_agents: 8
+  obstacle_query_radius_m: 15.0
+  obstacle_margin_m: 0.75
+
+  fm_num_segments: 8
+  ode_method: rk4
+  fm_noise_scale: 1.0
+  start_guidance_weight: 0.4
+  goal_guidance_weight: 1.2
+
+  use_cbf: true
+  cbf_tau0: 0.5
+  cbf_tau1: 0.9
+  cbf_passes: 8
+  cbf_extra_margin_m: 0.25
+  cbf_alpha: 8.0
+  cbf_max_corr_norm: 2.0
+
+  max_output_speed_mps: 15.0
+  seed: 7
+
+  idm_target_velocity: 8.0
+  idm_min_gap_to_lead_agent: 1.0
+  idm_headway_time: 1.5
+  idm_accel_max: 1.0
+  idm_decel_max: 3.0
+  idm_occupancy_map_radius: 40.0

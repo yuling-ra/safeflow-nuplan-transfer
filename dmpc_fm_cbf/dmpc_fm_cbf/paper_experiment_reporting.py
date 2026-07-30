@@ -21,6 +21,19 @@ REQUIRED_METRIC_COLUMNS = [
 ]
 
 
+PAPER_METRIC_COLUMNS = [
+    "paper_bucket",
+    "display_name",
+    "training_regime",
+    "safety_rate",
+    "goal_success_rate",
+    "time_to_goal_s",
+    "min_inter_agent_dist_m",
+    "road_boundary_violations",
+    "episodes",
+]
+
+
 DEFAULT_METHOD_META = {
     "fm_cbf": {
         "display_name": "SafeFlow (FM+CBF)",
@@ -33,6 +46,24 @@ DEFAULT_METHOD_META = {
         "family": "ours_ablation",
         "training_regime": "zero_shot",
         "notes": "Zero-shot transfer",
+    },
+    "FM+MPPI": {
+        "display_name": "FM+MPPI",
+        "family": "ours_ablation",
+        "training_regime": "zero_shot",
+        "notes": "2car validation fallback",
+    },
+    "FM+MPPI+CBF(Exec)": {
+        "display_name": "FM+MPPI+CBF(Exec)",
+        "family": "ours_ablation",
+        "training_regime": "zero_shot",
+        "notes": "2car validation fallback",
+    },
+    "FM+CBF(Ours)": {
+        "display_name": "SafeFlow (FM+CBF)",
+        "family": "ours",
+        "training_regime": "zero_shot",
+        "notes": "2car validation fallback",
     },
     "idm_proxy": {
         "display_name": "IDM-Proxy",
@@ -152,8 +183,17 @@ def attach_method_metadata(metrics_df: pd.DataFrame, metadata_df: pd.DataFrame) 
     return out
 
 
+def add_paper_metric_aliases(summary_df: pd.DataFrame) -> pd.DataFrame:
+    out = summary_df.copy()
+    if "collision_rate" in out.columns:
+        out["safety_rate"] = 1.0 - out["collision_rate"]
+    if "goal_reached_rate" in out.columns:
+        out["goal_success_rate"] = out["goal_reached_rate"]
+    return out
+
+
 def summarize_metrics(metrics_df: pd.DataFrame) -> pd.DataFrame:
-    return (
+    summary = (
         metrics_df.groupby(
             ["paper_bucket", "method", "display_name", "training_regime", "family", "notes"],
             as_index=False,
@@ -169,25 +209,92 @@ def summarize_metrics(metrics_df: pd.DataFrame) -> pd.DataFrame:
         )
         .sort_values(["paper_bucket", "training_regime", "display_name"])
     )
+    return add_paper_metric_aliases(summary)
+
+
+def build_paper_metric_table(summary_df: pd.DataFrame) -> pd.DataFrame:
+    out = add_paper_metric_aliases(summary_df)
+    cols = [c for c in PAPER_METRIC_COLUMNS if c in out.columns]
+    out = out[cols].copy()
+    rename = {
+        "paper_bucket": "Bucket",
+        "display_name": "Method",
+        "training_regime": "Training",
+        "safety_rate": "Safety",
+        "goal_success_rate": "Goal",
+        "time_to_goal_s": "TimeToGoal",
+        "min_inter_agent_dist_m": "MinDist",
+        "road_boundary_violations": "RoadViol",
+        "episodes": "N",
+    }
+    return out.rename(columns=rename)
 
 
 def build_zero_shot_table(summary_df: pd.DataFrame) -> pd.DataFrame:
     zero_shot_like = {"zero_shot", "no_learning", "in_domain"}
     out = summary_df[summary_df["training_regime"].isin(zero_shot_like)].copy()
-    return out.sort_values(["paper_bucket", "training_regime", "display_name"])
+    out = out.sort_values(["paper_bucket", "training_regime", "display_name"])
+    return build_paper_metric_table(out)
 
 
 def build_finetune_table(summary_df: pd.DataFrame) -> pd.DataFrame:
     out = summary_df[summary_df["training_regime"].isin({"fine_tuned", "in_domain", "no_learning"})].copy()
-    return out.sort_values(["paper_bucket", "training_regime", "display_name"])
+    out = out.sort_values(["paper_bucket", "training_regime", "display_name"])
+    return build_paper_metric_table(out)
 
 
 def export_markdown_table(df: pd.DataFrame, path: Path) -> None:
-    path.write_text(df.to_markdown(index=False))
+    try:
+        text = df.to_markdown(index=False)
+    except ImportError:
+        text = df.to_csv(index=False)
+    path.write_text(text)
+
+
+def _latex_escape(value: object) -> str:
+    text = str(value)
+    replacements = {
+        "\\": r"\textbackslash{}",
+        "&": r"\&",
+        "%": r"\%",
+        "$": r"\$",
+        "#": r"\#",
+        "_": r"\_",
+        "{": r"\{",
+        "}": r"\}",
+        "~": r"\textasciitilde{}",
+        "^": r"\textasciicircum{}",
+    }
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    return text
+
+
+def _format_table_value(value: object) -> str:
+    if pd.isna(value):
+        return ""
+    if isinstance(value, (float, np.floating)):
+        return f"{float(value):.3f}"
+    return _latex_escape(value)
 
 
 def export_latex_table(df: pd.DataFrame, path: Path) -> None:
-    path.write_text(df.to_latex(index=False, float_format=lambda x: f"{x:.3f}"))
+    try:
+        text = df.to_latex(index=False, float_format=lambda x: f"{x:.3f}")
+    except ImportError:
+        col_spec = "l" * len(df.columns)
+        lines = [
+            f"\\begin{{tabular}}{{{col_spec}}}",
+            "\\hline",
+            " & ".join(_latex_escape(c) for c in df.columns) + r" \\",
+            "\\hline",
+        ]
+        for _, row in df.iterrows():
+            lines.append(" & ".join(_format_table_value(v) for v in row) + r" \\")
+        lines.extend(["\\hline", "\\end{tabular}", ""])
+        text = "\n".join(lines)
+    path.write_text(text)
+
 
 
 def _plot_metric_bars(
@@ -197,6 +304,16 @@ def _plot_metric_bars(
     title: str,
     output_path: Path,
 ) -> None:
+    if summary_df.empty or methods_df.empty:
+        fig, ax = plt.subplots(1, 1, figsize=(6, 3))
+        ax.text(0.5, 0.5, "No data", ha="center", va="center")
+        ax.set_axis_off()
+        fig.suptitle(title)
+        fig.tight_layout()
+        fig.savefig(output_path, dpi=180, bbox_inches="tight")
+        plt.close(fig)
+        return
+
     buckets = list(summary_df["paper_bucket"].drop_duplicates())
     method_order = list(methods_df["display_name"])
 
@@ -222,16 +339,20 @@ def _plot_metric_bars(
 
 
 def plot_zero_shot_comparison(summary_df: pd.DataFrame, output_path: Path) -> None:
-    zero_df = build_zero_shot_table(summary_df)
+    zero_shot_like = {"zero_shot", "no_learning", "in_domain"}
+    zero_df = add_paper_metric_aliases(
+        summary_df[summary_df["training_regime"].isin(zero_shot_like)].copy()
+    )
     methods_df = zero_df[["display_name"]].drop_duplicates()
     _plot_metric_bars(
         zero_df,
         methods_df,
         [
-            ("collision_rate", "Collision Rate ↓"),
-            ("goal_reached_rate", "Goal Reached Rate ↑"),
-            ("road_boundary_violations", "Road Violations ↓"),
+            ("safety_rate", "Safety ↑"),
+            ("goal_success_rate", "Goal ↑"),
+            ("time_to_goal_s", "TimeToGoal ↓"),
             ("min_inter_agent_dist_m", "Min Inter-Agent Dist ↑"),
+            ("road_boundary_violations", "RoadViol ↓"),
         ],
         "Zero-shot / Baseline Comparison",
         output_path,
@@ -239,16 +360,19 @@ def plot_zero_shot_comparison(summary_df: pd.DataFrame, output_path: Path) -> No
 
 
 def plot_regime_comparison(summary_df: pd.DataFrame, output_path: Path) -> None:
-    finetune_df = build_finetune_table(summary_df)
+    finetune_df = add_paper_metric_aliases(
+        summary_df[summary_df["training_regime"].isin({"fine_tuned", "in_domain", "no_learning"})].copy()
+    )
     methods_df = finetune_df[["display_name"]].drop_duplicates()
     _plot_metric_bars(
         finetune_df,
         methods_df,
         [
-            ("collision_rate", "Collision Rate ↓"),
-            ("goal_reached_rate", "Goal Reached Rate ↑"),
+            ("safety_rate", "Safety ↑"),
+            ("goal_success_rate", "Goal ↑"),
             ("time_to_goal_s", "Time to Goal ↓"),
-            ("final_dist_to_goal_m", "Final Dist to Goal ↓"),
+            ("min_inter_agent_dist_m", "Min Inter-Agent Dist ↑"),
+            ("road_boundary_violations", "RoadViol ↓"),
         ],
         "Regime Comparison: Zero-shot vs Fine-tuned",
         output_path,
