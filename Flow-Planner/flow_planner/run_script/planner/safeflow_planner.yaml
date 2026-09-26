@@ -1,0 +1,77 @@
+safeflow_planner:
+  _target_: safeflow_nuplan_planner.SafeFlowNuPlanPlanner
+  _convert_: all
+
+  ckpt_path: ???
+  safeflow_project_root: ???
+  device: cpu
+
+  model_trajectory_steps: 60
+  trajectory_sample_interval: 0.1
+  local_goal_distance_m: 3.0
+  minimum_goal_distance_m: 0.5
+
+  max_agents: 8
+  obstacle_query_radius_m: 40.0
+  obstacle_margin_m: 0.75
+
+  fm_num_segments: 8
+  ode_method: rk4
+  fm_noise_scale: 0.1
+  start_guidance_weight: 0.4
+  goal_guidance_weight: 1.2
+
+  use_cbf: true
+  cbf_tau0: 0.5
+  cbf_tau1: 0.9
+  cbf_passes: 8
+  cbf_extra_margin_m: 0.25
+  cbf_alpha: 8.0
+  cbf_max_corr_norm: 2.0
+  obstacle_prediction_horizon_s: 3.0
+  obstacle_prediction_steps: 5
+
+  # Convert physical nuPlan m/s to the checkpoint's training scale.
+  model_speed_scale: 0.06
+
+  max_output_speed_mps: 15.0
+  emergency_decel_mps2: 6.0
+  seed: 7
+
+  idm_target_velocity: 8.0
+  idm_min_gap_to_lead_agent: 1.0
+  idm_headway_time: 1.5
+  idm_accel_max: 1.0
+  idm_decel_max: 3.0
+  idm_occupancy_map_radius: 40.0
+  use_obstacle_free_reference: false
+  ignore_traffic_lights_in_reference: false
+  use_scenario_route_reference: false
+  route_geometry_guidance_weight: 0.0
+  enable_route_avoidance_fallback: false
+  avoidance_lateral_offset_m: 4.5
+  avoidance_transition_distance_m: 7.0
+  follow_scenario_route_after_passing_agents: false
+  route_follow_min_speed_mps: 0.0
+  route_rejoin_distance_m: 20.0
+  sequential_agent_overtake: false
+
+  enable_overtake_demo: true
+  force_overtake_demo: false
+  overtake_pass_side: left
+  overtake_lateral_offset_m: 4.5
+  overtake_min_lead_distance_m: 12.0
+  overtake_max_lead_distance_m: 30.0
+  overtake_same_lane_width_m: 2.2
+  overtake_distance_m: 58.0
+  overtake_target_speed_mps: 7.0
+  overtake_min_clearance_m: 4.5
+  overtake_require_lane: true
+  overtake_lane_sample_stride: 4
+  overtake_follow_distance_m: 18.0
+  overtake_lane_change_distance_m: 26.0
+  overtake_return_to_original_lane: false
+  overtake_allow_lane_connector: true
+
+  debug_output_dir: ""
+  debug_max_steps: 8

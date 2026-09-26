@@ -1,0 +1,197 @@
+% Required packages:
+% \usepackage{amsmath,amssymb}
+% \usepackage{natbib}
+
+\subsection{Preliminaries: Control Barrier and Lyapunov Functions}
+
+We consider the ego control-affine system
+\begin{equation}
+    \dot{\mathbf{x}}
+    =
+    \mathbf{f}(\mathbf{x})
+    +
+    \mathbf{g}(\mathbf{x})\mathbf{u},
+    \qquad
+    \mathbf{x}\in\mathcal{X},\;
+    \mathbf{u}\in\mathcal{U}.
+    \label{eq:prelim_control_affine}
+\end{equation}
+Let \(\mathcal{V}=\{1,\ldots,N_v\}\) index surrounding vehicles,
+\(\mathcal{P}=\{1,\ldots,N_p\}\) index pedestrians, and
+\(\mathcal{M}=\{1,\ldots,N_m\}\) index static obstacles.  The full
+constraint set at time \(t\) is
+\begin{equation}
+    \mathcal{A}(t)
+    =
+    \mathcal{V}\cup\mathcal{P}\cup\mathcal{M},
+    \qquad
+    N(t)=|\mathcal{A}(t)|.
+    \label{eq:prelim_constraint_set}
+\end{equation}
+
+\paragraph{Control Lyapunov function.}
+Let \(\mathbf{x}_g\) be the local goal.  The ego goal is encoded by
+\begin{equation}
+    V_{\mathrm{e}}(\mathbf{x})
+    =
+    \frac{1}{2}
+    (\mathbf{x}-\mathbf{x}_g)^\top
+    P
+    (\mathbf{x}-\mathbf{x}_g),
+    \qquad
+    P=P^\top\succ0,
+    \label{eq:prelim_clf}
+\end{equation}
+with the exponentially stabilizing CLF condition
+\begin{equation}
+    \inf_{\mathbf{u}\in\mathcal{U}}
+    \left[
+    \dot{V}_{\mathrm{e}}(\mathbf{x},\mathbf{u})
+    +
+    c_VV_{\mathrm{e}}(\mathbf{x})
+    \right]
+    \le0,
+    \qquad
+    \dot{V}_{\mathrm{e}}
+    =
+    L_{\mathbf{f}}V_{\mathrm{e}}
+    +
+    L_{\mathbf{g}}V_{\mathrm{e}}\mathbf{u},
+    \label{eq:prelim_clf_condition}
+\end{equation}
+where \(c_V>0\).  Only the ego is controlled toward its goal; vehicles
+\(i\in\mathcal{V}\) and pedestrians \(j\in\mathcal{P}\) enter through
+predicted, time-varying safety constraints.
+
+\paragraph{Control barrier function.}
+Each constraint \(k\in\mathcal{A}(t)\) defines a safe set
+\(\mathcal{C}_k(t)=\{\mathbf{x}:h_k(\mathbf{x},t)\ge0\}\).  For
+vehicle \(i\), we use the orientation-aware barrier
+\begin{equation}
+    h_i(\mathbf{x},t)
+    =
+    1
+    -
+    \frac{\left(\boldsymbol{\Delta}_i^\top
+    \mathbf{e}_{\parallel,i}\right)^2}{a_i^2}
+    -
+    \frac{\left(\boldsymbol{\Delta}_i^\top
+    \mathbf{e}_{\perp,i}\right)^2}{b_i^2},
+    \qquad
+    \boldsymbol{\Delta}_i
+    =
+    \mathbf{p}(\mathbf{x})-\mathbf{p}_i(t).
+    \label{eq:prelim_vehicle_barrier}
+\end{equation}
+For pedestrian \(j\) and static obstacle \(m\), we use
+\begin{equation}
+    h_j(\mathbf{x},t)
+    =
+    \left\|\mathbf{p}(\mathbf{x})-\mathbf{p}_j(t)\right\|_2^2-r_j^2,
+    \qquad
+    h_m(\mathbf{x})
+    =
+    \left\|\mathbf{p}(\mathbf{x})-\mathbf{p}_m\right\|_2^2-r_m^2.
+    \label{eq:prelim_other_barriers}
+\end{equation}
+Safety requires every barrier to hold simultaneously:
+\begin{equation}
+    \mathcal{C}_{\mathrm{multi}}(t)
+    =
+    \bigcap_{i\in\mathcal{V}}\mathcal{C}_i(t)
+    \cap
+    \bigcap_{j\in\mathcal{P}}\mathcal{C}_j(t)
+    \cap
+    \bigcap_{m\in\mathcal{M}}\mathcal{C}_m(t).
+    \label{eq:prelim_multi_safe_set}
+\end{equation}
+Equivalently, the CBF condition must hold for all \(N(t)\) constraints:
+\begin{equation}
+    L_{\mathbf{f}}h_k
+    +
+    L_{\mathbf{g}}h_k\mathbf{u}
+    +
+    \frac{\partial h_k}{\partial t}
+    +
+    \alpha_k(h_k)
+    \ge0,
+    \qquad
+    \forall k\in\mathcal{A}(t).
+    \label{eq:prelim_multi_cbf_condition}
+\end{equation}
+This gives the index-count relation: one condition per vehicle \(i\),
+one per pedestrian \(j\), and one per static obstacle \(m\), for a total
+of \(N_v+N_p+N_m\) conditions.  The single-agent case is the special
+case \(N_v+N_p+N_m=1\).  The minimum safety margin and cumulative
+violation are
+\begin{equation}
+    h_{\min}(\mathbf{x},t)
+    =
+    \min_{k\in\mathcal{A}(t)}h_k(\mathbf{x},t),
+    \qquad
+    \Phi_{\mathrm{safe}}(\mathbf{x},t)
+    =
+    \sum_{k\in\mathcal{A}(t)}
+    \left[-h_k(\mathbf{x},t)\right]_+^2 .
+    \label{eq:prelim_safety_aggregate}
+\end{equation}
+Thus, \(\Phi_{\mathrm{safe}}=0\) if and only if all \(N(t)\)
+safe-set membership conditions \(h_k\ge0\) hold; forward invariance
+additionally requires the \(N(t)\) CBF inequalities in
+\eqref{eq:prelim_multi_cbf_condition}.
+
+\paragraph{CLF-CBF quadratic program.}
+The nominal control is corrected by
+\begin{align}
+    \mathbf{u}^{\star}
+    =
+    \operatorname*{arg\,min}_{\mathbf{u}\in\mathcal{U},\,\delta\ge0}
+    \quad&
+    \frac{1}{2}
+    \left\|\mathbf{u}-\mathbf{u}_{\mathrm{nom}}\right\|_2^2
+    +
+    \lambda_\delta\delta^2
+    \label{eq:prelim_clf_cbf_qp}
+    \\
+    \text{s.t.}\quad&
+    L_{\mathbf{f}}V_{\mathrm{e}}
+    +
+    L_{\mathbf{g}}V_{\mathrm{e}}\mathbf{u}
+    +
+    c_VV_{\mathrm{e}}
+    \le\delta,
+    \nonumber
+    \\
+    &
+    L_{\mathbf{f}}h_k
+    +
+    L_{\mathbf{g}}h_k\mathbf{u}
+    +
+    \frac{\partial h_k}{\partial t}
+    +
+    \alpha_k(h_k)
+    \ge0,
+    \quad
+    \forall k\in\mathcal{A}(t).
+    \nonumber
+\end{align}
+For SageFlow, the rectified-flow velocity supplies
+\(\mathbf{u}_{\mathrm{nom}}\), the CLF term supplies goal-directed
+guidance, and the CBF conditions are enforced by generation-time
+projection:
+\begin{equation}
+    v_{\mathrm{safe}}
+    =
+    \operatorname{Proj}_{\mathcal{K}_{\mathrm{safe}}(t)}
+    \left(
+    v_{\theta}^{\mathrm{RF}}
+    -
+    \eta_{\mathrm{CLF}}
+    \rho(\tau)\nabla V_{\mathrm{e}}
+    \right),
+    \label{eq:prelim_sageflow_projection}
+\end{equation}
+where \(\mathcal{K}_{\mathrm{safe}}(t)\) contains all \(N(t)\) CBF
+conditions in \eqref{eq:prelim_multi_cbf_condition}.  Since the CLF
+inequality is used as guidance rather than solved as a hard QP
+constraint, it is referred to as CLF-inspired goal guidance.

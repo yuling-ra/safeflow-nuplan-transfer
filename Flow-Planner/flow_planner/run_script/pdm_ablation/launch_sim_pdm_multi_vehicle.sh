@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+export MINI_DB_FILE="${MINI_DB_FILE:-/new_world/cockatiel/TeleNas/DataExchange/yuling/nuplan-devkit/nuplan-v1.1_mini/data/cache/mini/2021.07.16.18.06.21_veh-38_04471_04922.db}"
+export SCENARIO_TYPES="${SCENARIO_TYPES:-medium_magnitude_speed}"
+export SCENARIO_TOKENS="${SCENARIO_TOKENS:-f2e82a3aaccb5777}"
+export MAP_NAMES="${MAP_NAMES:-us-nv-las-vegas-strip}"
+export SYNTHETIC_THREE_VEHICLE_SCENARIO=true
+export SYNTHETIC_AVOIDANCE_MODE=combined
+export SYNTHETIC_SCENARIO_MAX_ITERATIONS="${SYNTHETIC_SCENARIO_MAX_ITERATIONS:-150}"
+export SYNTHETIC_OBSTACLE_1_PROGRESS_M="${SYNTHETIC_OBSTACLE_1_PROGRESS_M:-24.0}"
+export SYNTHETIC_OBSTACLE_2_PROGRESS_M="${SYNTHETIC_OBSTACLE_2_PROGRESS_M:-34.0}"
+export SYNTHETIC_VEHICLE_1_SPEED_MPS="${SYNTHETIC_VEHICLE_1_SPEED_MPS:-4.0}"
+export SYNTHETIC_VEHICLE_2_SPEED_MPS="${SYNTHETIC_VEHICLE_2_SPEED_MPS:-4.0}"
+export SYNTHETIC_KEEP_RECORDED_VEHICLES="${SYNTHETIC_KEEP_RECORDED_VEHICLES:-true}"
+export SINGLE_AGENT_SCENARIO=false
+
+exec "$SCRIPT_DIR/run_pdm_ablation.sh" multi_vehicle "$@"

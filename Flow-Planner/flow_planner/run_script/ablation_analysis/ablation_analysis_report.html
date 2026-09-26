@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>SafeFlow、Flow-Planner 与 PDM 消融实验分析</title>
+<style>
+@page { size: A4; margin: 16mm 15mm 17mm; }
+* { box-sizing: border-box; }
+body {
+  font-family: "Noto Sans CJK SC", "Noto Sans CJK TC", "Microsoft YaHei", sans-serif;
+  color: #20252b; font-size: 10.5pt; line-height: 1.55; margin: 0;
+}
+h1 { color: #163f4a; font-size: 23pt; line-height: 1.2; margin: 0 0 8pt; }
+h2 { color: #166b72; font-size: 16pt; border-bottom: 1.3px solid #c8d5d8; padding-bottom: 3pt; margin: 18pt 0 8pt; }
+h3 { color: #315c63; font-size: 12.5pt; margin: 13pt 0 5pt; }
+p { margin: 5pt 0 7pt; }
+li { margin: 2pt 0; }
+table { border-collapse: collapse; width: 100%; margin: 7pt 0 11pt; page-break-inside: avoid; }
+th, td { border: 0.5px solid #aebdc1; padding: 4pt 5pt; text-align: center; }
+th { background: #e7f0f0; color: #153e46; font-weight: 700; }
+td:first-child, th:first-child { text-align: left; }
+img { display: block; max-width: 100%; max-height: 125mm; margin: 8pt auto 3pt; page-break-inside: avoid; }
+blockquote { border-left: 3px solid #167c80; background: #f2f7f7; margin: 8pt 0; padding: 6pt 10pt; }
+code { background: #f0f2f3; padding: 1pt 3pt; font-family: "Noto Sans Mono", monospace; }
+pre { background: #f0f2f3; padding: 7pt; white-space: pre-wrap; font-size: 8.5pt; }
+hr { border: 0; border-top: 1px solid #d9e1e2; }
+a { color: #126e78; }
+h2, h3, table, blockquote { break-inside: avoid; }
+</style>
+</head>
+<body><h1>SafeFlow、Flow-Planner 与 PDM 消融实验分析</h1>
+<p>生成日期：2026-08-27<br />
+实验设置：每个规划器在相同的四类本地场景中运行 1 个 scenario，使用 CPU，闭环非反应式交通。</p>
+<h2>1. 主要结论</h2>
+<ol>
+<li><strong>PDM 的路线完成度和规划延迟最好。</strong> 四个场景的平均 route progress ratio 为 0.843，平均单步规划延迟约 94.3 ms。</li>
+<li><strong>SafeFlow 在多车场景中推进能力最好。</strong> SafeFlow 多车 route ratio 为 0.841，高于 PDM 的 0.612 和 Flow-Planner 的 0.500。</li>
+<li><strong>SafeFlow 行人场景是安全停车，不是完整通过。</strong> 它没有碰撞，但只前进了 7.87 m，<code>ego_is_making_progress=False</code>，因此不能把这个结果描述为“避障成功通过”。</li>
+<li><strong>原生 Flow-Planner 没有稳定的主动超车目标。</strong> 当前纯 checkpoint 结果无碰撞，但更接近跟车或保持路线。之前的 <code>straight_overtake.nuboard</code> 使用了额外的 overtake wrapper，必须单独标注，不能作为纯 Flow-Planner 消融结果。</li>
+<li><strong>当前的 100% 只表示单场景通过率。</strong> 每个 cell 只有 1 个 scenario，所以 <code>1/1 = 100% collision-free</code>，不等同于统计意义上的避障概率。</li>
+</ol>
+<h2>2. 核心结果</h2>
+<p><img alt="四类场景的路线完成比例" src="route_ratio.png" /></p>
+<p>图 1：<code>ego_expert_progress_along_route_ratio</code>。它衡量自车实际沿专家路线推进了多少，而不是单纯仿真是否结束。</p>
+<p><img alt="四类场景的实际行驶距离" src="ego_progress.png" /></p>
+<p>图 2：自车沿专家路线的实际推进距离。不同场景的专家路线长度不同，因此应优先比较同一场景内的规划器，而不要直接比较不同场景的米数。</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th style="text-align: right;">SafeFlow</th>
+<th style="text-align: right;">Flow-Planner</th>
+<th style="text-align: right;">PDM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>直道</td>
+<td style="text-align: right;">0.671 / 82.17 m</td>
+<td style="text-align: right;">0.673 / 96.35 m</td>
+<td style="text-align: right;"><strong>1.000 / 155.82 m</strong></td>
+</tr>
+<tr>
+<td>弯道 2 车</td>
+<td style="text-align: right;"><strong>0.777 / 80.47 m</strong></td>
+<td style="text-align: right;">0.404 / 59.91 m</td>
+<td style="text-align: right;">0.760 / 113.60 m</td>
+</tr>
+<tr>
+<td>多车</td>
+<td style="text-align: right;"><strong>0.841 / 102.97 m</strong></td>
+<td style="text-align: right;">0.500 / 61.20 m</td>
+<td style="text-align: right;">0.612 / 74.96 m</td>
+</tr>
+<tr>
+<td>行人</td>
+<td style="text-align: right;">0.177 / 7.87 m</td>
+<td style="text-align: right;">0.548 / 24.41 m</td>
+<td style="text-align: right;"><strong>1.000 / 59.09 m</strong></td>
+</tr>
+</tbody>
+</table>
+<h3>安全与行为指标</h3>
+<p><img alt="无自车责任碰撞" src="collision_free.png" /></p>
+<p>图 3：NuPlan 的 <code>no_ego_at_fault_collisions</code>。当前保存的 12 个结果均为无自车责任碰撞，但由于每个场景只有一次运行，该图不能支持“真实避障概率为 100%”的结论。</p>
+<p>所有当前结果的共同点：</p>
+<ul>
+<li><code>drivable_area_compliance = 1.0</code>；</li>
+<li><code>driving_direction_compliance = 1.0</code>；</li>
+<li>自车责任车辆碰撞数为 0；</li>
+<li>自车责任 VRU 碰撞数为 0；</li>
+<li><code>time_to_collision_within_bound = 1.0</code>，这是通过/未通过指标，不是实际的最小 TTC 秒数。</li>
+</ul>
+<p>舒适性并不与安全性完全一致：</p>
+<ul>
+<li>SafeFlow：直道和多车为不舒适，弯道和行人为舒适；</li>
+<li>Flow-Planner：弯道为不舒适，其余三组为舒适；</li>
+<li>PDM：弯道和多车为不舒适，直道和行人为舒适。</li>
+</ul>
+<p>这说明规划器可能通过更急的横向或纵向修正换取路线推进和避障空间。安全、完成度和舒适性需要同时报告。</p>
+<h2>3. 规划延迟与“时间最短”</h2>
+<p><img alt="单步规划延迟" src="planning_latency.png" /></p>
+<p>图 4：<code>compute_trajectory_runtimes_mean</code>，单位为毫秒。</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th style="text-align: right;">SafeFlow</th>
+<th style="text-align: right;">Flow-Planner</th>
+<th style="text-align: right;">PDM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>直道</td>
+<td style="text-align: right;">94.3 ms</td>
+<td style="text-align: right;">282.5 ms</td>
+<td style="text-align: right;"><strong>93.6 ms</strong></td>
+</tr>
+<tr>
+<td>弯道</td>
+<td style="text-align: right;">194.3 ms</td>
+<td style="text-align: right;">258.2 ms</td>
+<td style="text-align: right;"><strong>90.8 ms</strong></td>
+</tr>
+<tr>
+<td>多车</td>
+<td style="text-align: right;">183.0 ms</td>
+<td style="text-align: right;">258.0 ms</td>
+<td style="text-align: right;"><strong>102.1 ms</strong></td>
+</tr>
+<tr>
+<td>行人</td>
+<td style="text-align: right;">174.4 ms</td>
+<td style="text-align: right;">213.6 ms</td>
+<td style="text-align: right;"><strong>90.5 ms</strong></td>
+</tr>
+</tbody>
+</table>
+<p>四组场景的仿真时间是固定 horizon：直道、弯道、多车约 14.8 s，行人约 11.8 s。因此 <code>runner_report.duration</code> 是机器运行时间，不能作为自车完成任务的时间。当前可复核的结论是：</p>
+<blockquote>
+<p>如果“时间”指单步规划推理时间，PDM 最快，SafeFlow 次之，Flow-Planner 最慢；如果“时间”指首次避障或首次超车时间，当前标准指标还没有记录，需要额外事件检测。</p>
+</blockquote>
+<p><img alt="综合 NuPlan score" src="composite_score.png" /></p>
+<p>图 5：NuPlan 聚合 score。该 score 是多个评价项的组合，不应替代碰撞率、路线完成度和延迟分别报告。</p>
+<h2>4. 如何解释三种方法</h2>
+<h3>SafeFlow</h3>
+<p>SafeFlow 的优势体现在显式安全约束和多车场景中的路线推进。多车实验达到 102.97 m，且无自车责任碰撞。行人实验则表现为保守等待：它牺牲了路线完成度，换取了不与行人发生冲突。</p>
+<p>直道第二次运行使用了 <code>SINGLE_AGENT_VEHICLE_POSITION_SCALE=0.80</code>。第一次默认位置压缩为 0.35 时发生了车辆碰撞，因此第一次结果没有纳入本报告。弯道运行中出现过一次 loopy path 异常，随后使用了 collision-checked safety fallback；最终闭环无碰撞，但这应作为实现行为记录在实验说明中。</p>
+<h3>Flow-Planner</h3>
+<p>当前使用的是原生 Flow-Planner checkpoint。它在四个保存结果中均无自车责任碰撞，且都保持在可行驶区域内，但路线完成度低于 PDM，尤其是弯道和多车场景。原生 checkpoint 并不包含显式 overtake objective，因此减慢前车后可能跟车或减速，而不是自动完成超车。</p>
+<p><code>straight_overtake.nuboard</code> 使用了显式换道、碰撞检查和超车 wrapper，适合展示“带安全 wrapper 的超车”，但不应与原生 checkpoint 放在同一个公平消融列中。</p>
+<h3>PDM</h3>
+<p>PDM 在当前四个场景中平均路线完成度最高，同时单步规划延迟最低。直道和行人场景达到 route ratio 1.0。弯道和多车场景虽然无碰撞，但舒适性为 False，说明其候选轨迹选择在复杂交通中可能产生较强控制动作。</p>
+<h2>5. Table 3 截图解读</h2>
+<p>Table 3 反映的是训练/模型组件消融，不是上述四个 NuBoard 场景的直接评价。完整配置的代表性结果为：</p>
+<pre><code class="language-text">CLS-NR          94.07
+S-CR            99.22
+S-Area          99.22
+S-PR            95.06
+S-Comfort       91.09
+Loss Selector    1.03
+Loss Generator 1624.5
+</code></pre>
+<p>主要含义：</p>
+<ul>
+<li>Reward Quality 打开后，CLS-NR 从约 31.79 提升到 90 以上，说明奖励质量对闭环行为影响很大；</li>
+<li>Coordinate Transform 和 KNN 主要改善闭环规划指标，表明局部坐标对齐和邻居建模对避障有效；</li>
+<li>完整配置不是每一个单项的最大值，而是路线、避障和舒适性之间更均衡的配置；</li>
+<li>S-Comfort 没有和所有规划指标同步上升，说明更积极的避障可能带来舒适性代价；</li>
+<li>open-loop loss 下降不代表闭环必然更好，因为闭环还受历史误差、状态分布偏移和执行器响应影响。</li>
+</ul>
+<h2>6. Table 4 截图解读</h2>
+<p>Table 4 对比 IL/RL loss，以及 Mode Dropout、Selector Side Task、Ego-history Dropout 和 Backbone Sharing。截图中 IL 完整配置和较好 RL 配置可以概括为：</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th style="text-align: right;">IL</th>
+<th style="text-align: right;">RL</th>
+<th style="text-align: right;">RL - IL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CLS-NR</td>
+<td style="text-align: right;">93.41</td>
+<td style="text-align: right;">94.07</td>
+<td style="text-align: right;">+0.66</td>
+</tr>
+<tr>
+<td>S-CR</td>
+<td style="text-align: right;">98.85</td>
+<td style="text-align: right;">99.22</td>
+<td style="text-align: right;">+0.37</td>
+</tr>
+<tr>
+<td>S-Area</td>
+<td style="text-align: right;">98.85</td>
+<td style="text-align: right;">99.22</td>
+<td style="text-align: right;">+0.37</td>
+</tr>
+<tr>
+<td>S-PR</td>
+<td style="text-align: right;">93.87</td>
+<td style="text-align: right;">95.06</td>
+<td style="text-align: right;">+1.19</td>
+</tr>
+<tr>
+<td>S-Comfort</td>
+<td style="text-align: right;"><strong>96.15</strong></td>
+<td style="text-align: right;">91.09</td>
+<td style="text-align: right;">-5.06</td>
+</tr>
+</tbody>
+</table>
+<p>因此 Table 4 的合理结论是：</p>
+<ul>
+<li>RL 更偏向提升闭环规划、避障和场景适应能力；</li>
+<li>IL 的舒适性更高，但 RL 可能通过更积极的动作获得更好的规划指标；</li>
+<li>Backbone Sharing 和 Selector Side Task 可能提升规划指标，但 generator loss 不一定更低；</li>
+<li>Table 4 中出现的 generator loss 5424.3、1928.1 不能单独用来判断闭环质量；</li>
+<li>IL/RL 的 loss 和 NuPlan 的 collision-free、route ratio、comfort 属于不同层次指标，不能直接混成一个排序。</li>
+</ul>
+<h2>7. 当前结果的统计限制与下一步</h2>
+<p>当前每个实验只有 1 个 scenario，建议正式实验至少使用多个日志和随机种子。需要新增的行为级指标包括：</p>
+<ol>
+<li>首次检测到障碍物的时间；</li>
+<li>首次离开原车道的时间；</li>
+<li>最小几何安全距离；</li>
+<li>首次超过障碍车辆的时间；</li>
+<li>超车完成率，即自车纵向超过障碍车并保持目标车道安全间距；</li>
+<li>行人通过期间的等待时间和是否在行人通过后恢复行驶；</li>
+<li>每个场景的 collision-free rate、route completion、comfort 和 inference latency。</li>
+</ol>
+<p>建议最终论文使用如下表述：</p>
+<blockquote>
+<p>在当前单场景测试中，三种规划器均实现了无自车责任碰撞，但该结果仅代表 1/1 场景通过，不能解释为具有统计意义的避障概率。PDM 具有更高的路线完成度和更低的规划延迟；SafeFlow 在多车场景中表现出较好的安全约束和路线推进能力，但在行人场景中采取了保守等待策略；原生 Flow-Planner 能保持无碰撞和可行驶区域约束，但缺少稳定的主动超车行为。</p>
+</blockquote>
+<h2>8. 数据与复现</h2>
+<ul>
+<li>原始汇总数据：<a href="metrics.csv">metrics.csv</a></li>
+<li>图表生成脚本：<a href="generate_report.py">generate_report.py</a></li>
+<li>SafeFlow 直道 NuBoard：<a href="../saved_nuboards/safeflow_straight.nuboard">../saved_nuboards/safeflow_straight.nuboard</a></li>
+<li>SafeFlow 弯道 NuBoard：<a href="../saved_nuboards/safeflow_curve.nuboard">../saved_nuboards/safeflow_curve.nuboard</a></li>
+</ul>
+<p>重新生成图表：</p>
+<pre><code class="language-bash">/new_world/cockatiel/miniconda3/envs/nuplan_clean/bin/python \
+  ablation_analysis/generate_report.py
+</code></pre></body>
+</html>

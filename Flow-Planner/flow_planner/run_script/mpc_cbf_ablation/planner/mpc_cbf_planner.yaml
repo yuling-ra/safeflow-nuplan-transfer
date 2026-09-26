@@ -1,0 +1,33 @@
+mpc_cbf_planner:
+  _target_: mpc_cbf_ablation.mpc_cbf_planner.MPC_CBF_Planner
+  _convert_: all
+
+  # The emitted trajectory is the constrained MPC horizon, not an appended
+  # unconstrained IDM reference tail.
+  trajectory_steps: 13
+  trajectory_sample_interval: 0.1
+  mpc_horizon_steps: 12
+  wheel_base_m: 2.8
+  max_accel_mps2: 3.0
+  max_decel_mps2: 6.0
+  max_steering_rad: 0.55
+  max_steering_rate_radps: 0.6
+  max_speed_mps: 15.0
+  max_agents: 8
+  obstacle_query_radius_m: 45.0
+  obstacle_margin_m: 0.5
+  tracking_error_margin_m: 0.75
+  obstacle_prediction_horizon_s: 2.0
+
+  tracking_weight: 2.0
+  heading_weight: 0.5
+  speed_weight: 0.5
+  terminal_weight: 2.0
+  accel_weight: 0.05
+  steering_weight: 0.05
+  steering_rate_weight: 0.2
+
+  solver_maxiter: 35
+  solver_ftol: 0.001
+  cbf_min_distance_m: 2.5
+  cbf_gamma: 0.2

@@ -1,0 +1,38 @@
+% Compact inference procedure for the deployed SageFlow Rectified Flow planner.
+% Detailed prediction, barrier, projection, and fallback definitions are
+% provided in the appendix.
+\begin{algorithm}[t]
+\caption{SageFlow Inference with Rectified Flow and Adaptive CBF}
+\label{alg:sageflow_inference}
+\begin{algorithmic}[1]
+
+\STATE Select a local goal from the route reference and construct the
+       ego-centered, goal-aligned canonical frame
+\STATE Extract nearby agents, predict their future positions with a
+       constant-velocity rollout, and transform them into the canonical frame
+\STATE Form the normalized conditioning vector and sample
+       $\hat{\mathbf{T}}_0\sim\mathcal{N}(0,\sigma^2I)$
+\STATE Lock the first positional waypoint and set the Rectified Flow budget
+       $N_{\mathrm{RF}}$
+
+\FOR{$k=0,\ldots,N_{\mathrm{RF}}-1$}
+    \STATE Predict the normalized Rectified Flow velocity and apply start and
+           goal guidance
+    \STATE Compute the composite gate
+           $g_k=g_{\mathrm{time}}(\tau_k)g_{\mathrm{prox}}(\hat{\mathbf{T}}_{t_k},\mathcal{O}^c)$
+    \IF{$g_k>0$ and CBF is enabled}
+        \STATE Apply the iterative closed-form CBF projection to the XY
+               velocity channels and blend it with weight $g_k$
+    \ENDIF
+    \STATE Integrate the corrected velocity over $[t_k,t_{k+1}]$ using the
+           configured ODE solver and re-lock the first waypoint
+\ENDFOR
+
+\STATE Guide the trajectory tail to the canonical local goal and transform
+       the trajectory back to the world frame
+\STATE Time-parameterize and validate the trajectory for numerical validity,
+       collision clearance, and non-looping progress
+\STATE Return the validated trajectory or a collision-checked safety fallback
+
+\end{algorithmic}
+\end{algorithm}
